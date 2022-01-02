@@ -1,0 +1,105 @@
+<h1 class="mat-h1" style="text-align: center;">Invoice / Рахунок No. / № {{date | date:'y-M'}}</h1>
+<div class="grid">
+  <div><b>Date and Place:</b> {{date | date:'shortDate'}}, City</div>
+  <div><b>Дата та місце:</b> {{date | date:'dd.MM.y'}}, Місто</div>
+
+  <div><b>Supplier:</b> Individual Entrepreneur Ivan Petrov<br>
+    address: Address line<br>
+    Individual Tax Number: 0123456789
+  </div>
+  <div><b>Виконавець</b> ФОП Иван Сидорович Петров<br>
+    адреса: Адрес<br>
+    ІПН: 0123456789
+  </div>
+
+  <div><b>Customer:</b> Customer Name<br>
+    Customer Address line 1<br>
+    Customer Address line 2<br>
+    Customer Address line 3
+  </div>
+  <div><b>Замовник</b> Customer Name<br>
+    Customer Address line 1<br>
+    Customer Address line 2<br>
+    Customer Address line 3
+  </div>
+
+  <div><b>Subject matter:</b> Software Development</div>
+  <div><b>Предмет:</b> Розробка програмного забезпечення</div>
+
+  <div><b>Currency:</b> USD</div>
+  <div><b>Валюта:</b> Долар США</div>
+
+  <div><b>Price (amount) of the goods/services:</b> {{total | number:'1.2-2'}}</div>
+  <div><b>Ціна (загальна вартість) товарів/послуг:</b> {{total | number:'1.2-2':'uk_UA'}}</div>
+
+  <div><b>Terms of payments and acceptation:</b><br>
+    Payment for Software Development by the invoice No.{{date | date:'y-M'}} from {{date | date:'y-MM-dd'}} according to Contract No.12/34 from 2021-01-01
+  </div>
+  <div>
+    <p><b>Beneficiary:</b><br>
+      IBAN: UA012345678901234567890123456<br>
+      Receiver: PE Ivan Petrov, Address line</p>
+    <p><b>Account with Institution:</b><br>
+      Bank: BANK<br>
+      Swift code: XXXXXXXXXXX<br>
+      City: City</p>
+    <p><b>Intermediary:</b><br>
+      Bank: BANK<br>
+      Account Number: 123456789<br>
+      Swift code: XXXXXXXXXYY<br>
+      City: City</p>
+  </div>
+</div>
+<table class="mat-elevation-z8">
+  <thead>
+    <tr>
+      <th>No. /<br>№</th>
+      <th>Description / Опис</th>
+      <th>Quantity /<br>Кількість<br><small>(hour / час)</small></th>
+      <th>Price / Ціна<br><small>(USD)</small></th>
+      <th>Amount /<br>Загальна вартість<br><small>(USD)</small></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of items; index as i">
+      <td style="text-align: center;">{{i + 1}}</td>
+      <td style="text-align: left;">{{item.descriptionEn}}, {{periodStart | date:'LLLL y'}} / <br>
+        {{item.description}}, {{periodStart | date:'dd.MM.y'}} &boxh; {{periodEnd | date:'dd.MM.y'}}</td>
+      <td>{{item.quantity | number:'1.2-2'}}</td>
+      <td>{{item.price | number:'1.2-2'}}</td>
+      <td>{{item.amount | number:'1.2-2'}}</td>
+    </tr>
+    <tr>
+      <td colspan="4">Total / Усього</td>
+      <td>{{total | number:'1.2-2'}}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="5">
+        <table>
+          <tbody>
+            <tr>
+              <td>Total to pay /<br>Усього до сплати</td>
+              <td>{{total | numberInWords}}<br>{{total | numberInWords:'uk_UA'}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+<p><small>All charges of correspondent banks are at the Supplier’s expenses. /<br>
+  Усі комісії банків-кореспондентів сплачує виконавець.</small></p>
+<p><small>Payment hereof at the same time is the evidence of the work performance and the service delivery, acceptation thereof in full scope and the
+  confirmation of final mutual installments between Parties. /<br>
+  Оплата згідно цього Інвойсу одночасно є свідченням виконання робіт, надання послуг, їх прийняття в повному обсязі, а також підтвердженням кінцевих розрахунків
+  між Сторонами.</small></p>
+<p><small>The Parties shall not be liable for non-performance or improper performance of the obligations under the agreement during the termof insuperable force
+  circumstances. /<br>
+  Сторони звільняються від відповідальності за невиконання чи неналежне виконання зобов’язань за договором на час дії форс-мажорних обставин.</small></p>
+<p><small>Payment according hereto shall be also the confirmation that Parties have no claims to each other and have no intention to submit any claims. /<br>
+  Оплата згідно цього Інвойсу є підтвердженням того, що Сторони не мають взаємних претензій та не мають наміру направляти рекламації.</small></p>
+<p><small>Any disputes arising out of the agreement between the Parties shall be settled by the competent court at the location of a defendant. /<br>
+  Всі спори, що виникнуть між Сторонами по угоді будуть розглядатись компетентним судом за місцезнаходження відповідача.</small></p>
+<p style="text-align: center;">Supplier / Виконавець <img src="assets/signature.png" alt="" style="vertical-align: middle;"> Ivan Petrov / Петров И. С.</p>

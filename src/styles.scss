@@ -1,1 +1,76 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1em;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+
+  th, td {
+    padding: 0.5em;
+    border: 1px solid black;
+  }
+
+  th {
+    background: lightgray;
+    white-space: nowrap;
+    text-align: center;
+
+    &:first-child {
+      white-space: nowrap;
+      width: 1px;
+    }
+  }
+
+  td {
+    vertical-align: top;
+    text-align: right;
+  }
+
+  tfoot {
+    td {
+      padding: 0;
+
+      table {
+        margin: 0;
+
+        td {
+          border: 0 none;
+          padding: 0.5em;
+          text-align: left;
+
+          &:first-child {
+            white-space: nowrap;
+            width: 1px;
+          }
+        }
+      }
+    }
+  }
+}
+
+$invoice-typography: mat.define-typography-config(
+    $body-1: mat.define-typography-level(11px, 15px, 400),
+    $headline: mat.define-typography-level(14px, 20px, 400),
+);
+
+@include mat.core($invoice-typography);
