@@ -1,0 +1,196 @@
+<div mat-dialog-title>
+  <div class="grid grid-2">
+    <h2>Реквізити рахунку</h2>
+    <div align="end">
+      <button (click)="print()" [disabled]="!form.valid" color="primary" mat-icon-button>
+        <mat-icon>print</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="form">
+    <div class="grid grid-3">
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Номер рахунку</mat-label>
+          <input formControlName="number" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Дата рахунку</mat-label>
+          <input formControlName="date" [matDatepicker]="pickerDate" matInput>
+          <mat-datepicker-toggle [for]="pickerDate" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #pickerDate color="primary"></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Місце</mat-label>
+          <input formControlName="place" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Place</mat-label>
+          <input formControlName="placeEn" matInput>
+        </mat-form-field>
+      </div>
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Договір №</mat-label>
+          <input formControlName="contract" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Від</mat-label>
+          <input formControlName="contractDate" [matDatepicker]="pickerContractDate" matInput>
+          <mat-datepicker-toggle [for]="pickerContractDate" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #pickerContractDate color="primary"></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="grid grid-3">
+      <div class="grid grid-2" style="grid-column-start: 1; grid-column-end: 3">
+        <mat-form-field appearance="outline">
+          <mat-label>Предмет</mat-label>
+          <input formControlName="subjectMatter" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Subject matter</mat-label>
+          <input formControlName="subjectMatterEn" matInput>
+        </mat-form-field>
+      </div>
+      <div class="grid grid-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Початок періоду</mat-label>
+          <input formControlName="periodStart" [matDatepicker]="pickerPeriodStart" matInput>
+          <mat-datepicker-toggle [for]="pickerPeriodStart" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #pickerPeriodStart color="primary"></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Кінець періоду</mat-label>
+          <input formControlName="periodEnd" [matDatepicker]="pickerPeriodEnd" matInput>
+          <mat-datepicker-toggle [for]="pickerPeriodEnd" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #pickerPeriodEnd color="primary"></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <fieldset formArrayName="services" class="mat-expansion-panel mat-expanded">
+      <legend>Послуги</legend>
+      <div *ngFor="let service of servicesGroups; index as i" [formGroup]="service" class="grid grid-5">
+        <mat-form-field appearance="outline">
+          <mat-label>Опис</mat-label>
+          <input formControlName="description" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Description</mat-label>
+          <input formControlName="descriptionEn" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Кількість (час)</mat-label>
+          <input type="number" formControlName="quantity" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Ціна (USD)</mat-label>
+          <input type="number" formControlName="price" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Загальна вартість (USD)</mat-label>
+          <input type="number" formControlName="amount" matInput>
+        </mat-form-field>
+        <div style="margin-top: 10px;">
+          <button mat-icon-button (click)="removeService(i)" color="primary" aria-label="Додати послугу">
+            <mat-icon>exposure_neg_1</mat-icon>
+          </button>
+        </div>
+      </div>
+      <button mat-icon-button (click)="addService()" color="primary" aria-label="Додати послугу">
+        <mat-icon>plus_one</mat-icon>
+      </button>
+    </fieldset>
+    <br>
+    <mat-accordion multi>
+      <mat-expansion-panel expanded="{{model.needSupplierData}}">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Виконавець</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="grid grid-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Ім'я</mat-label>
+            <input formControlName="name" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input formControlName="nameEn" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>ІПН</mat-label>
+            <input formControlName="itn" matInput>
+          </mat-form-field>
+        </div>
+        <div class="grid grid-2">
+          <mat-form-field appearance="outline">
+            <mat-label>Адреса</mat-label>
+            <input formControlName="address" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Address</mat-label>
+            <input formControlName="addressEn" matInput>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel expanded="{{model.needBeneficiaryData}}">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Реквізити банківського рахунку</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="grid grid-3">
+          <mat-form-field appearance="outline">
+            <mat-label>IBAN</mat-label>
+            <input formControlName="iban" matInput>
+          </mat-form-field>
+          <div style="grid-column-start: 2; grid-column-end: 4;">
+            <mat-form-field appearance="outline">
+              <mat-label>Receiver</mat-label>
+              <input formControlName="receiver" matInput>
+            </mat-form-field>
+          </div>
+          <mat-form-field appearance="outline">
+            <mat-label>Bank</mat-label>
+            <input formControlName="bank" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Swift Code</mat-label>
+            <input formControlName="swiftCode" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Bank City</mat-label>
+            <input formControlName="bankCity" matInput>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Замовник</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="grid grid-2">
+          <mat-form-field appearance="outline">
+            <mat-label>Назва</mat-label>
+            <input formControlName="customer" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Страна</mat-label>
+            <input formControlName="customerCountry" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Адреса</mat-label>
+            <input formControlName="customerAddress1" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Адреса (друга строка)</mat-label>
+            <input formControlName="customerAddress2" matInput>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
+</mat-dialog-content>
