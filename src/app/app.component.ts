@@ -13,9 +13,10 @@ import {ParamsComponent} from 'src/app/params.component';
 export class AppComponent implements OnInit {
   private readonly dialogParams = {disableClose: true, width: '100%'};
 
-  readonly items$ = this.model.services$.pipe(map(x => x.map(service => Object.assign({},
-    service,
-    service.amount ? {quantity: service.amount / service.price} : {amount: service.price * (service.quantity || 0)}))));
+  readonly items$ = this.model.services$.pipe(
+    map(x => x.map(service => Object.assign({},
+      service,
+      service.amount ? {quantity: service.amount / service.price} : {amount: service.price * (service.quantity || 0)}))));
 
   readonly total$ = this.items$.pipe(map(x => x.reduce((total, x) => total += (x.amount || 0), 0)));
 

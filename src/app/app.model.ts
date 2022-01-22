@@ -50,7 +50,6 @@ export class AppModel {
     {
       description: 'Розробка програмного забезпечення',
       descriptionEn: 'Software Development',
-      quantity: 123,
       price: 12.34
     }
   ]);

@@ -66,10 +66,16 @@ export class ParamsComponent {
   }
 
   private createService(service?: Item): FormGroup {
+    const periodYear = this.model.periodEnd.getFullYear();
+    const periodMonth = this.model.periodEnd.getMonth();
+    const defaultQuantity = new Array(this.model.periodEnd.getDate()).fill(8).reduce((q, x, i) => {
+      const day = (new Date(periodYear, periodMonth, i)).getDay();
+      return q + (day && day < 6 && x || 0);
+    }, 0);
     return this.formBuilder.group({
       description: [service?.description, Validators.required],
       descriptionEn: [service?.descriptionEn, Validators.required],
-      quantity: [service?.quantity],
+      quantity: service?.amount ? [] : [service?.quantity || defaultQuantity],
       price: [service?.price, Validators.required],
       amount: [service?.amount]
     });
