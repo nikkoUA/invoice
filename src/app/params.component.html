@@ -2,14 +2,17 @@
   <div class="grid grid-2">
     <h2>Реквізити рахунку</h2>
     <div align="end">
-      <button (click)="print()" [disabled]="!form.valid" color="primary" mat-icon-button>
+      <button (click)="model.reset()" color="accent" mat-icon-button tabindex="-1">
+        <mat-icon>replay</mat-icon>
+      </button>
+      <button (click)="print()" [disabled]="model.form.invalid" color="primary" mat-icon-button>
         <mat-icon>print</mat-icon>
       </button>
     </div>
   </div>
 </div>
 <mat-dialog-content class="mat-typography">
-  <form [formGroup]="form">
+  <form [formGroup]="model.form">
     <div class="grid grid-3">
       <div class="grid grid-2">
         <mat-form-field appearance="outline">
@@ -23,7 +26,7 @@
           <mat-datepicker #pickerDate color="primary"></mat-datepicker>
         </mat-form-field>
       </div>
-      <div class="grid grid-2">
+      <div formGroupName="place" class="grid grid-2">
         <mat-form-field appearance="outline">
           <mat-label>Місце</mat-label>
           <input formControlName="place" matInput>
@@ -33,7 +36,7 @@
           <input formControlName="placeEn" matInput>
         </mat-form-field>
       </div>
-      <div class="grid grid-2">
+      <div formGroupName="contract" class="grid grid-2">
         <mat-form-field appearance="outline">
           <mat-label>Договір №</mat-label>
           <input formControlName="contract" matInput>
@@ -47,7 +50,7 @@
       </div>
     </div>
     <div class="grid grid-3">
-      <div class="grid grid-2" style="grid-column-start: 1; grid-column-end: 3">
+      <div formGroupName="subjectMatter" class="grid grid-2" style="grid-column-start: 1; grid-column-end: 3">
         <mat-form-field appearance="outline">
           <mat-label>Предмет</mat-label>
           <input formControlName="subjectMatter" matInput>
@@ -75,7 +78,7 @@
 
     <fieldset formArrayName="services" class="mat-expansion-panel mat-expanded">
       <legend>Послуги</legend>
-      <div *ngFor="let service of servicesGroups; index as i" [formGroup]="service" class="grid grid-5">
+      <div *ngFor="let service of model.formServicesGroups; index as i" [formGroup]="service" class="grid grid-5">
         <mat-form-field appearance="outline">
           <mat-label>Опис</mat-label>
           <input formControlName="description" matInput>
@@ -84,7 +87,7 @@
           <mat-label>Description</mat-label>
           <input formControlName="descriptionEn" matInput>
         </mat-form-field>
-        <mat-form-field appearance="outline">
+        <mat-form-field *ngIf="!service.get('amount')?.value" appearance="outline">
           <mat-label>Кількість (час)</mat-label>
           <input type="number" formControlName="quantity" matInput>
         </mat-form-field>
@@ -92,23 +95,23 @@
           <mat-label>Ціна (USD)</mat-label>
           <input type="number" formControlName="price" matInput>
         </mat-form-field>
-        <mat-form-field appearance="outline">
+        <mat-form-field *ngIf="!service.get('quantity')?.value" appearance="outline">
           <mat-label>Загальна вартість (USD)</mat-label>
           <input type="number" formControlName="amount" matInput>
         </mat-form-field>
         <div style="margin-top: 10px;">
-          <button mat-icon-button (click)="removeService(i)" color="primary" aria-label="Додати послугу">
+          <button mat-icon-button (click)="model.removeService(i)" color="accent" aria-label="Додати послугу">
             <mat-icon>exposure_neg_1</mat-icon>
           </button>
         </div>
       </div>
-      <button mat-icon-button (click)="addService()" color="primary" aria-label="Додати послугу">
+      <button mat-icon-button (click)="model.addService()" color="primary" aria-label="Додати послугу">
         <mat-icon>plus_one</mat-icon>
       </button>
     </fieldset>
     <br>
     <mat-accordion multi>
-      <mat-expansion-panel expanded="{{model.needSupplierData}}">
+      <mat-expansion-panel formGroupName="supplier" expanded="{{needSupplierData}}">
         <mat-expansion-panel-header>
           <mat-panel-title>Виконавець</mat-panel-title>
         </mat-expansion-panel-header>
@@ -138,7 +141,7 @@
         </div>
       </mat-expansion-panel>
 
-      <mat-expansion-panel expanded="{{model.needBeneficiaryData}}">
+      <mat-expansion-panel formGroupName="beneficiary" expanded="{{needBeneficiaryData}}">
         <mat-expansion-panel-header>
           <mat-panel-title>Реквізити банківського рахунку</mat-panel-title>
         </mat-expansion-panel-header>
@@ -147,12 +150,12 @@
             <mat-label>IBAN</mat-label>
             <input formControlName="iban" matInput>
           </mat-form-field>
-          <div style="grid-column-start: 2; grid-column-end: 4;">
-            <mat-form-field appearance="outline">
-              <mat-label>Receiver</mat-label>
-              <input formControlName="receiver" matInput>
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="outline" style="grid-column-start: 2; grid-column-end: 4;">
+            <mat-label>Receiver</mat-label>
+            <input formControlName="receiver" matInput>
+          </mat-form-field>
+        </div>
+        <div class="grid grid-3">
           <mat-form-field appearance="outline">
             <mat-label>Bank</mat-label>
             <input formControlName="bank" matInput>
@@ -166,9 +169,28 @@
             <input formControlName="bankCity" matInput>
           </mat-form-field>
         </div>
+        <h4>Intermediary Bank</h4>
+        <div class="grid grid-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Bank</mat-label>
+            <input formControlName="intermediaryBank" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Account Number</mat-label>
+            <input formControlName="intermediaryBankAccountNumber" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Swift Code</mat-label>
+            <input formControlName="intermediaryBankSwiftCode" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Bank City</mat-label>
+            <input formControlName="intermediaryBankCity" matInput>
+          </mat-form-field>
+        </div>
       </mat-expansion-panel>
 
-      <mat-expansion-panel>
+      <mat-expansion-panel formGroupName="customer">
         <mat-expansion-panel-header>
           <mat-panel-title>Замовник</mat-panel-title>
         </mat-expansion-panel-header>
@@ -181,6 +203,8 @@
             <mat-label>Страна</mat-label>
             <input formControlName="customerCountry" matInput>
           </mat-form-field>
+        </div>
+        <div class="grid grid-2">
           <mat-form-field appearance="outline">
             <mat-label>Адреса</mat-label>
             <input formControlName="customerAddress1" matInput>

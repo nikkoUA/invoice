@@ -34,6 +34,10 @@ fieldset {
     grid-template-columns: 1fr 1fr 1fr;
   }
 
+  &.grid-4 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
   &.grid-5 {
     grid-template-columns: 3fr 3fr 1fr 1fr 1fr 0.5fr;
   }

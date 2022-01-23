@@ -1,107 +1,148 @@
 import {DatePipe} from '@angular/common';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
-import {Item} from 'src/app/item';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Service} from 'src/app/service';
+import beneficiary from '../../data/beneficiary.json';
+import contract from '../../data/contract.json';
+import customer from '../../data/customer.json';
+import place from '../../data/place.json';
+import services from '../../data/services.json';
+import subjectMatter from '../../data/subject-matter.json';
+import supplier from '../../data/supplier.json';
 
 @Injectable({providedIn: 'root'})
 export class AppModel {
   private readonly currentDate = new Date();
-
-  date = this.currentDate.getDate() > 15
+  private readonly date = this.currentDate.getDate() > 15
     ? new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1)
     : new Date(this.currentDate.getFullYear(), this.currentDate.getMonth());
-  number = this.datePipe.transform(this.date, 'y-M');
-  place = '';
-  placeEn = '';
+  private readonly periodStart = new Date(this.date.getFullYear(), this.date.getMonth() - 1);
+  private readonly periodEnd = new Date(this.date.getTime() - 1);
 
-  name = '';
-  nameEn = '';
-  address = '';
-  addressEn = '';
-  itn = '';
-  needSupplierData = !this.name || !this.nameEn || !this.address || !this.addressEn || !this.itn;
+  readonly form = this.formBuilder.group({
+    number: ['', Validators.required],
+    date: [undefined, Validators.required],
+    periodStart: [this.periodStart, Validators.required],
+    periodEnd: [this.periodEnd, Validators.required],
 
-  iban = '';
-  receiver = '';
-  bank = '';
-  swiftCode = '';
-  bankCity = '';
-  intermediaryBank = '';
-  intermediaryBankAccountNumber = '';
-  intermediaryBankSwiftCode = '';
-  intermediaryBankCity = '';
-  needBeneficiaryData = !this.iban || !this.receiver || !this.bank || !this.swiftCode || !this.bankCity;
+    place: this.formBuilder.group({
+      place: ['', Validators.required],
+      placeEn: ['', Validators.required]
+    }),
 
-  customer = '';
-  customerAddress1 = '';
-  customerAddress2 = '';
-  customerCountry = '';
+    contract: this.formBuilder.group({
+      contract: ['', Validators.required],
+      contractDate: [undefined, Validators.required]
+    }),
 
-  subjectMatter = 'Розробка програмного забезпечення';
-  subjectMatterEn = 'Software Development';
+    subjectMatter: this.formBuilder.group({
+      subjectMatter: ['', Validators.required],
+      subjectMatterEn: ['', Validators.required]
+    }),
 
-  contract = '12-34';
-  contractDate = new Date(2021, 1, 1);
+    services: this.formBuilder.array([]),
 
-  periodStart = new Date(this.date.getFullYear(), this.date.getMonth() - 1);
-  periodEnd = new Date(this.date.getTime() - 1);
+    supplier: this.formBuilder.group({
+      name: ['', Validators.required],
+      nameEn: ['', Validators.required],
+      itn: ['', Validators.required],
+      address: ['', Validators.required],
+      addressEn: ['', Validators.required]
+    }),
 
-  readonly services$ = new BehaviorSubject<Array<Item>>([
-    {
-      description: 'Розробка програмного забезпечення',
-      descriptionEn: 'Software Development',
-      price: 12.34
-    }
-  ]);
+    beneficiary: this.formBuilder.group({
+      iban: ['', Validators.required],
+      receiver: ['', Validators.required],
+      bank: ['', Validators.required],
+      swiftCode: ['', Validators.required],
+      bankCity: ['', Validators.required],
+      intermediaryBank: [''],
+      intermediaryBankAccountNumber: [''],
+      intermediaryBankSwiftCode: [''],
+      intermediaryBankCity: ['']
+    }),
 
-  constructor(private readonly datePipe: DatePipe) {}
+    customer: this.formBuilder.group({
+      customer: [''],
+      customerCountry: [''],
+      customerAddress1: [''],
+      customerAddress2: ['']
+    })
+  });
 
-  updateModel(data: any): void {
-    if (data.date instanceof Date) this.date = data.date;
-    if (typeof data.number === 'string') this.number = data.number;
-    if (typeof data.place === 'string') this.place = data.place;
-    if (typeof data.placeEn === 'string') this.placeEn = data.placeEn;
+  get formPlace() {
+    return this.form.get('place') as FormGroup;
+  }
 
-    if (typeof data.name === 'string') this.name = data.name;
-    if (typeof data.nameEn === 'string') this.nameEn = data.nameEn;
-    if (typeof data.address === 'string') this.address = data.address;
-    if (typeof data.addressEn === 'string') this.addressEn = data.addressEn;
-    if (typeof data.itn === 'string') this.itn = data.itn;
+  get formContract() {
+    return this.form.get('contract') as FormGroup;
+  }
 
-    if (typeof data.iban === 'string') this.iban = data.iban;
-    if (typeof data.receiver === 'string') this.receiver = data.receiver;
-    if (typeof data.bank === 'string') this.bank = data.bank;
-    if (typeof data.swiftCode === 'string') this.swiftCode = data.swiftCode;
-    if (typeof data.bankCity === 'string') this.bankCity = data.bankCity;
-    if (typeof data.intermediaryBank === 'string') this.intermediaryBank = data.intermediaryBank;
-    if (typeof data.intermediaryBankAccountNumber === 'string') this.intermediaryBankAccountNumber = data.intermediaryBankAccountNumber;
-    if (typeof data.intermediaryBankSwiftCode === 'string') this.intermediaryBankSwiftCode = data.intermediaryBankSwiftCode;
-    if (typeof data.intermediaryBankCity === 'string') this.intermediaryBankCity = data.intermediaryBankCity;
+  get formSubjectMatter() {
+    return this.form.get('subjectMatter') as FormGroup;
+  }
 
-    if (typeof data.customer === 'string') this.customer = data.customer;
-    if (typeof data.customerAddress1 === 'string') this.customerAddress1 = data.customerAddress1;
-    if (typeof data.customerAddress2 === 'string') this.customerAddress2 = data.customerAddress2;
-    if (typeof data.customerCountry === 'string') this.customerCountry = data.customerCountry;
+  get formServices() {
+    return this.form.get('services') as FormArray;
+  }
 
-    if (typeof data.subjectMatter === 'string') this.subjectMatter = data.subjectMatter;
-    if (typeof data.subjectMatterEn === 'string') this.subjectMatterEn = data.subjectMatterEn;
+  get formServicesGroups() {
+    return this.formServices.controls as Array<FormGroup>;
+  }
 
-    if (typeof data.contract === 'string') this.contract = data.contract;
-    if (typeof data.contractDate === 'string') this.contractDate = data.contractDate;
+  get formSupplier() {
+    return this.form.get('supplier') as FormGroup;
+  }
 
-    if (data.periodStart instanceof Date) this.periodStart = data.periodStart;
-    if (data.periodEnd instanceof Date) this.periodEnd = data.periodEnd;
+  get formBeneficiary() {
+    return this.form.get('beneficiary') as FormGroup;
+  }
 
-    if (Array.isArray(data.services)) {
-      this.services$.next(data.services.map((x: any) => {
-        const service: Partial<Item> = {};
-        if (typeof x.description === 'string') service.description = x.description;
-        if (typeof x.descriptionEn === 'string') service.descriptionEn = x.descriptionEn;
-        if (typeof x.quantity === 'number') service.quantity = x.quantity;
-        if (typeof x.price === 'number') service.price = x.price;
-        if (typeof x.amount === 'number') service.amount = x.amount;
-        return service;
-      }).filter((x: Partial<Item>) => x.description != null && x.descriptionEn != null));
-    }
+  get formCustomer() {
+    return this.form.get('customer') as FormGroup;
+  }
+
+  constructor(private readonly formBuilder: FormBuilder, private readonly datePipe: DatePipe) {
+    this.reset();
+  }
+
+  reset(): void {
+    this.form.get('number')?.reset(this.datePipe.transform(this.date, 'y-M'));
+    this.form.get('date')?.reset(this.date);
+    this.form.get('periodStart')?.reset(this.periodStart);
+    this.form.get('periodEnd')?.reset(this.periodEnd);
+    this.formPlace.reset(place);
+    this.formContract.reset(Object.assign({}, contract, {contractDate: new Date(contract.contractDate)}));
+    this.formSubjectMatter.reset(subjectMatter);
+    this.formSupplier.reset(supplier);
+    this.formBeneficiary.reset(beneficiary);
+    this.formCustomer.reset(customer);
+    for (let i = this.formServices.length; i > 0; i--) this.removeService(i - 1);
+    this.formServices.reset();
+    services.forEach(service => this.formServices.push(this.createService(service)));
+  }
+
+  addService(): void {
+    this.formServices.push(this.createService());
+  }
+
+  removeService(index: number): void {
+    this.formServices.removeAt(index);
+  }
+
+  private createService(service?: Service): FormGroup {
+    const periodYear = this.periodEnd.getFullYear();
+    const periodMonth = this.periodEnd.getMonth();
+    const defaultQuantity = new Array(this.periodEnd.getDate()).fill(8).reduce((q, x, i) => {
+      const day = (new Date(periodYear, periodMonth, i)).getDay();
+      return q + (day && day < 6 && x || 0);
+    }, 0);
+    return this.formBuilder.group({
+      description: [service?.description, Validators.required],
+      descriptionEn: [service?.descriptionEn, Validators.required],
+      quantity: service?.amount ? [] : [service?.quantity || defaultQuantity],
+      price: [service?.price, Validators.required],
+      amount: [service?.amount]
+    });
   }
 }

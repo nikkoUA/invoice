@@ -1,9 +1,10 @@
 import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {fromEvent, map, skip} from 'rxjs';
+import {filter, fromEvent, map, Observable, skip, startWith} from 'rxjs';
 import {AppModel} from 'src/app/app.model';
 import {ParamsComponent} from 'src/app/params.component';
+import {InvoiceData} from './invoice-data';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +14,16 @@ import {ParamsComponent} from 'src/app/params.component';
 export class AppComponent implements OnInit {
   private readonly dialogParams = {disableClose: true, width: '100%'};
 
-  readonly items$ = this.model.services$.pipe(
-    map(x => x.map(service => Object.assign({},
+  readonly invoiceData$ = (this.model.form.valueChanges as Observable<InvoiceData>).pipe(
+    startWith(this.model.form.value as InvoiceData),
+    filter(() => this.model.form.valid));
+
+  readonly services$ = this.invoiceData$.pipe(
+    map(x => x.services.map(service => Object.assign({},
       service,
       service.amount ? {quantity: service.amount / service.price} : {amount: service.price * (service.quantity || 0)}))));
 
-  readonly total$ = this.items$.pipe(map(x => x.reduce((total, x) => total += (x.amount || 0), 0)));
+  readonly total$ = this.services$.pipe(map(x => x.reduce((total, x) => total += (x.amount || 0), 0)));
 
   constructor(
     @Inject(DOCUMENT) document: Document,

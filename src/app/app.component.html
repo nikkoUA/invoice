@@ -1,122 +1,128 @@
-<h1 class="mat-h1" style="text-align: center;">Invoice / Рахунок No. / № {{model.number}}</h1>
-<div class="grid grid-2">
-  <div><b>Date and Place:</b> {{model.date | date:'shortDate'}}, {{model.placeEn}}</div>
-  <div><b>Дата та місце:</b> {{model.date | date:'dd.MM.y'}}, {{model.place}}</div>
+<ng-container *ngIf="invoiceData$ | async as invoiceData">
+  <h1 class="mat-h1" style="text-align: center;">Invoice / Рахунок No. / № {{invoiceData.number}}</h1>
+  <div class="grid grid-2">
+    <div><b>Date and Place:</b> {{invoiceData.date | date:'shortDate'}}, {{invoiceData.place.placeEn}}</div>
+    <div><b>Дата та місце:</b> {{invoiceData.date | date:'dd.MM.y'}}, {{invoiceData.place.place}}</div>
 
-  <div>
-    <p><b>Supplier:</b> Individual Entrepreneur {{model.nameEn}}</p>
-    <p>Address: {{model.addressEn}}</p>
-    <p>Individual Tax Number: {{model.itn}}</p>
-  </div>
-  <div>
-    <p><b>Виконавець:</b> ФОП {{model.name}}</p>
-    <p>Адреса: {{model.address}}</p>
-    <p>ІПН: {{model.itn}}</p>
-  </div>
-
-  <ng-container *ngIf="model.customer">
     <div>
-      <p><b>Customer:</b> {{model.customer}}</p>
-      <p *ngIf="model.customerAddress1">{{model.customerAddress1}}</p>
-      <p *ngIf="model.customerAddress2">{{model.customerAddress2}}</p>
-      <p *ngIf="model.customerCountry">{{model.customerCountry}}</p>
+      <p><b>Supplier:</b> Individual Entrepreneur {{invoiceData.supplier.nameEn}}</p>
+      <p>Address: {{invoiceData.supplier.addressEn}}</p>
+      <p>Individual Tax Number: {{invoiceData.supplier.itn}}</p>
     </div>
     <div>
-      <p><b>Замовник:</b> {{model.customer}}</p>
-      <p *ngIf="model.customerAddress1">{{model.customerAddress1}}</p>
-      <p *ngIf="model.customerAddress2">{{model.customerAddress2}}</p>
-      <p *ngIf="model.customerCountry">{{model.customerCountry}}</p>
+      <p><b>Виконавець:</b> ФОП {{invoiceData.supplier.name}}</p>
+      <p>Адреса: {{invoiceData.supplier.address}}</p>
+      <p>ІПН: {{invoiceData.supplier.itn}}</p>
     </div>
-  </ng-container>
 
-  <div><b>Subject matter:</b> {{model.subjectMatterEn}}</div>
-  <div><b>Предмет:</b> {{model.subjectMatter}}</div>
+    <ng-container *ngIf="invoiceData.customer.customer">
+      <div>
+        <p><b>Customer:</b> {{invoiceData.customer.customer}}</p>
+        <p *ngIf="invoiceData.customer.customerAddress1">{{invoiceData.customer.customerAddress1}}</p>
+        <p *ngIf="invoiceData.customer.customerAddress2">{{invoiceData.customer.customerAddress2}}</p>
+        <p *ngIf="invoiceData.customer.customerCountry">{{invoiceData.customer.customerCountry}}</p>
+      </div>
+      <div>
+        <p><b>Замовник:</b> {{invoiceData.customer.customer}}</p>
+        <p *ngIf="invoiceData.customer.customerAddress1">{{invoiceData.customer.customerAddress1}}</p>
+        <p *ngIf="invoiceData.customer.customerAddress2">{{invoiceData.customer.customerAddress2}}</p>
+        <p *ngIf="invoiceData.customer.customerCountry">{{invoiceData.customer.customerCountry}}</p>
+      </div>
+    </ng-container>
 
-  <div><b>Currency:</b> USD</div>
-  <div><b>Валюта:</b> Долар США</div>
+    <div><b>Subject matter:</b> {{invoiceData.subjectMatter.subjectMatterEn}}</div>
+    <div><b>Предмет:</b> {{invoiceData.subjectMatter.subjectMatter}}</div>
 
-  <ng-container *ngIf="total$ | async as total">
-    <div><b>Price (amount) of the services:</b> {{total | number:'1.2-2'}}</div>
-    <div><b>Ціна (загальна вартість) послуг:</b> {{total | number:'1.2-2':'uk_UA'}}</div>
-  </ng-container>
+    <div><b>Currency:</b> USD</div>
+    <div><b>Валюта:</b> Долар США</div>
 
-  <div>
-    <p><b>Terms of payments and acceptation:</b></p>
+    <ng-container *ngIf="total$ | async as total">
+      <div><b>Price (amount) of the services:</b> {{total | number:'1.2-2'}}</div>
+      <div><b>Ціна (загальна вартість) послуг:</b> {{total | number:'1.2-2':'uk_UA'}}</div>
+    </ng-container>
+
     <div>
-      Payment for {{model.subjectMatterEn}} as per invoice No{{model.number | replace:'-':' '}} from {{model.date | date:'yMMdd'}}
-      <ng-container *ngIf="model.contract && model.contractDate">
-        according to Contract No{{model.contract | replace:'-':' '}} from {{model.contractDate | date:'yMMdd'}}
+      <p><b>Terms of payments and acceptation:</b></p>
+      <div>
+        Payment for {{invoiceData.subjectMatter.subjectMatterEn}} as per invoice No{{invoiceData.number | replace:'-':' '}}
+        from {{invoiceData.date | date:'yMMdd'}}
+        <ng-container *ngIf="invoiceData.contract.contract && invoiceData.contract.contractDate">
+          according to Contract No{{invoiceData.contract.contract | replace:'-':' '}} from {{invoiceData.contract.contractDate | date:'yMMdd'}}
+        </ng-container>
+      </div>
+    </div>
+    <div>
+      <p><b>Beneficiary:</b></p>
+      <p>IBAN: {{invoiceData.beneficiary.iban}}</p>
+      <p>Receiver: {{invoiceData.beneficiary.receiver}}</p>
+      <p><b>Account with Institution:</b></p>
+      <p>Bank: {{invoiceData.beneficiary.bank}}</p>
+      <p>Swift code: {{invoiceData.beneficiary.swiftCode}}</p>
+      <p>City: {{invoiceData.beneficiary.bankCity}}</p>
+      <ng-container
+          *ngIf="invoiceData.beneficiary.intermediaryBank && invoiceData.beneficiary.intermediaryBankAccountNumber && invoiceData.beneficiary.intermediaryBankSwiftCode && invoiceData.beneficiary.intermediaryBankCity">
+        <p><b>Intermediary:</b></p>
+        <p>Bank: {{invoiceData.beneficiary.intermediaryBank}}</p>
+        <p>Account Number: {{invoiceData.beneficiary.intermediaryBankAccountNumber}}</p>
+        <p>Swift code: {{invoiceData.beneficiary.intermediaryBankSwiftCode}}</p>
+        <p>City: {{invoiceData.beneficiary.intermediaryBankCity}}</p>
       </ng-container>
     </div>
   </div>
-  <div>
-    <p><b>Beneficiary:</b></p>
-    <p>IBAN: {{model.iban}}</p>
-    <p>Receiver: {{model.receiver}}</p>
-    <p><b>Account with Institution:</b></p>
-    <p>Bank: {{model.bank}}</p>
-    <p>Swift code: {{model.swiftCode}}</p>
-    <p>City: {{model.bankCity}}</p>
-    <ng-container *ngIf="model.intermediaryBank && model.intermediaryBankAccountNumber && model.intermediaryBankSwiftCode && model.intermediaryBankCity">
-      <p><b>Intermediary:</b></p>
-      <p>Bank: {{model.intermediaryBank}}</p>
-      <p>Account Number: {{model.intermediaryBankAccountNumber}}</p>
-      <p>Swift code: {{model.intermediaryBankSwiftCode}}</p>
-      <p>City: {{model.intermediaryBankCity}}</p>
-    </ng-container>
-  </div>
-</div>
-<table *ngIf="total$ | async as total">
-  <thead>
-    <tr>
-      <th>No. /<br>№</th>
-      <th>Description / Опис</th>
-      <th>Quantity /<br>Кількість<br><small>(hour / час)</small></th>
-      <th>Price / Ціна<br><small>(USD)</small></th>
-      <th>Amount /<br>Загальна вартість<br><small>(USD)</small></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of items$ | async; index as i">
-      <td style="text-align: center;">{{i + 1}}</td>
-      <td style="text-align: left;">{{item.descriptionEn}}, {{model.periodStart | date:'LLLL y'}} / <br>
-        {{item.description}}, {{model.periodStart | date:'dd.MM.y'}} &boxh; {{model.periodEnd | date:'dd.MM.y'}}</td>
-      <td>{{item.quantity | number:'1.2-2'}}</td>
-      <td>{{item.price | number:'1.2-2'}}</td>
-      <td>{{item.amount | number:'1.2-2'}}</td>
-    </tr>
-    <tr>
-      <td colspan="4">Total / Усього</td>
-      <td>{{total | number:'1.2-2'}}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="5">
-        <table>
-          <tbody>
-            <tr>
-              <td>Total to pay /<br>Усього до сплати</td>
-              <td>{{total | numberInWords}}<br>{{total | numberInWords:'uk_UA'}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  </tfoot>
-</table>
-<p><small>All charges of correspondent banks are at the Supplier’s expenses. /<br>
-  Усі комісії банків-кореспондентів сплачує виконавець.</small></p>
-<p><small>Payment hereof at the same time is the evidence of the work performance and the service delivery, acceptation thereof in full scope and the
-  confirmation of final mutual installments between Parties. /<br>
-  Оплата згідно цього Інвойсу одночасно є свідченням виконання робіт, надання послуг, їх прийняття в повному обсязі, а також підтвердженням кінцевих розрахунків
-  між Сторонами.</small></p>
-<p><small>The Parties shall not be liable for non-performance or improper performance of the obligations under the agreement during the termof insuperable force
-  circumstances. /<br>
-  Сторони звільняються від відповідальності за невиконання чи неналежне виконання зобов’язань за договором на час дії форс-мажорних обставин.</small></p>
-<p><small>Payment according hereto shall be also the confirmation that Parties have no claims to each other and have no intention to submit any claims. /<br>
-  Оплата згідно цього Інвойсу є підтвердженням того, що Сторони не мають взаємних претензій та не мають наміру направляти рекламації.</small></p>
-<p><small>Any disputes arising out of the agreement between the Parties shall be settled by the competent court at the location of a defendant. /<br>
-  Всі спори, що виникнуть між Сторонами по угоді будуть розглядатись компетентним судом за місцезнаходження відповідача.</small></p>
-<p style="text-align: center;">Supplier / Виконавець <img alt="" src="assets/signature.png" style="vertical-align: middle;"> {{model.nameEn}} / {{model.name}}
-</p>
+  <table *ngIf="total$ | async as total">
+    <thead>
+      <tr>
+        <th>No. /<br>№</th>
+        <th>Description / Опис</th>
+        <th>Quantity /<br>Кількість<br><small>(hour / час)</small></th>
+        <th>Price / Ціна<br><small>(USD)</small></th>
+        <th>Amount /<br>Загальна вартість<br><small>(USD)</small></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let service of services$ | async; index as i">
+        <td style="text-align: center;">{{i + 1}}</td>
+        <td style="text-align: left;">{{service.descriptionEn}}, {{invoiceData.periodStart | date:'LLLL y'}} / <br>
+          {{service.description}}, {{invoiceData.periodStart | date:'dd.MM.y'}} &boxh; {{invoiceData.periodEnd | date:'dd.MM.y'}}</td>
+        <td>{{service.quantity | number:'1.2-2'}}</td>
+        <td>{{service.price | number:'1.2-2'}}</td>
+        <td>{{service.amount | number:'1.2-2'}}</td>
+      </tr>
+      <tr>
+        <td colspan="4">Total / Усього</td>
+        <td>{{total | number:'1.2-2'}}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5">
+          <table>
+            <tbody>
+              <tr>
+                <td>Total to pay /<br>Усього до сплати</td>
+                <td>{{total | numberInWords}}<br>{{total | numberInWords:'uk_UA'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  <p><small>All charges of correspondent banks are at the Supplier’s expenses. /<br>
+    Усі комісії банків-кореспондентів сплачує виконавець.</small></p>
+  <p><small>Payment hereof at the same time is the evidence of the work performance and the service delivery, acceptation thereof in full scope and the
+    confirmation of final mutual installments between Parties. /<br>
+    Оплата згідно цього Інвойсу одночасно є свідченням виконання робіт, надання послуг, їх прийняття в повному обсязі, а також підтвердженням кінцевих
+    розрахунків
+    між Сторонами.</small></p>
+  <p><small>The Parties shall not be liable for non-performance or improper performance of the obligations under the agreement during the termof insuperable
+    force
+    circumstances. /<br>
+    Сторони звільняються від відповідальності за невиконання чи неналежне виконання зобов’язань за договором на час дії форс-мажорних обставин.</small></p>
+  <p><small>Payment according hereto shall be also the confirmation that Parties have no claims to each other and have no intention to submit any claims. /<br>
+    Оплата згідно цього Інвойсу є підтвердженням того, що Сторони не мають взаємних претензій та не мають наміру направляти рекламації.</small></p>
+  <p><small>Any disputes arising out of the agreement between the Parties shall be settled by the competent court at the location of a defendant. /<br>
+    Всі спори, що виникнуть між Сторонами по угоді будуть розглядатись компетентним судом за місцезнаходження відповідача.</small></p>
+  <p style="text-align: center;">Supplier / Виконавець <img alt="" src="assets/signature.png" style="vertical-align: middle;"> {{invoiceData.supplier.nameEn}}
+    / {{invoiceData.supplier.name}}</p>
+</ng-container>

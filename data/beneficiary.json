@@ -1,0 +1,11 @@
+{
+  "iban": "",
+  "receiver": "",
+  "bank": "",
+  "swiftCode": "",
+  "bankCity": "",
+  "intermediaryBank": "",
+  "intermediaryBankAccountNumber": "",
+  "intermediaryBankSwiftCode": "",
+  "intermediaryBankCity": ""
+}
