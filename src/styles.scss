@@ -50,8 +50,8 @@ $invoice-typography: mat.define-typography-config(
 
 @include mat.core($invoice-typography);
 
-$primary: mat.define-palette(mat.$indigo-palette);
-$accent: mat.define-palette(mat.$pink-palette);
+$primary: mat.define-palette(mat.$light-blue-palette);
+$accent: mat.define-palette(mat.$red-palette);
 $theme: mat.define-light-theme((
     color: (
         primary: $primary,
@@ -59,4 +59,10 @@ $theme: mat.define-light-theme((
     )
 ));
 
-@include mat.all-component-themes($theme);
+@include mat.core-theme($theme);
+@include mat.button-theme($theme);
+@include mat.datepicker-theme($theme);
+@include mat.dialog-theme($theme);
+@include mat.expansion-theme($theme);
+@include mat.form-field-theme($theme);
+@include mat.input-theme($theme);
