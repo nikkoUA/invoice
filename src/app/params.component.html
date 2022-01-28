@@ -139,6 +139,20 @@
             <input formControlName="addressEn" matInput>
           </mat-form-field>
         </div>
+        <div class="grid grid-2">
+          <mat-form-field #signatureFileFormField appearance="outline">
+            <mat-label>Файл зображення підпису</mat-label>
+            <input (focus)="signatureFileInput.focus()" formControlName="signatureImageName" matInput autocomplete="off" readonly>
+            <input #signatureFileInput [uploadFile]="model.formSupplier.get('signatureImage')" [uploadFileName]="model.formSupplier.get('signatureImageName')"
+                   (focus)="signatureFileFormField._elementRef.nativeElement.classList.add('mat-focused');"
+                   (blur)="signatureFileFormField._elementRef.nativeElement.classList.remove('mat-focused')"
+                   type="file" accept="image/*" tabindex="-1">
+            <mat-hint>Зображення повинно бути з прозорим або білим фоном та розміром не більше 275х85px</mat-hint>
+          </mat-form-field>
+          <div>
+            <img [src]="model.formSupplier.get('signatureImage')?.value" [alt]="model.formSupplier.get('signatureImageName')?.value" class="signature">
+          </div>
+        </div>
       </mat-expansion-panel>
 
       <mat-expansion-panel formGroupName="beneficiary" expanded="{{needBeneficiaryData}}">

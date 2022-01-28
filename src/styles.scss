@@ -43,6 +43,12 @@ fieldset {
   }
 }
 
+img.signature {
+  max-width: 275px;
+  max-height: 85px;
+  vertical-align: middle;
+}
+
 $invoice-typography: mat.define-typography-config(
     $body-1: mat.define-typography-level(14px, 15px, 400),
     $headline: mat.define-typography-level(14px, 20px, 400),

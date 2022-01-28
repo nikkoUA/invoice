@@ -47,7 +47,9 @@ export class AppModel {
       nameEn: ['', Validators.required],
       itn: ['', Validators.required],
       address: ['', Validators.required],
-      addressEn: ['', Validators.required]
+      addressEn: ['', Validators.required],
+      signatureImage: ['', Validators.required],
+      signatureImageName: ['', Validators.required]
     }),
 
     beneficiary: this.formBuilder.group({

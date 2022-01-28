@@ -123,6 +123,7 @@
     Оплата згідно цього Інвойсу є підтвердженням того, що Сторони не мають взаємних претензій та не мають наміру направляти рекламації.</small></p>
   <p><small>Any disputes arising out of the agreement between the Parties shall be settled by the competent court at the location of a defendant. /<br>
     Всі спори, що виникнуть між Сторонами по угоді будуть розглядатись компетентним судом за місцезнаходження відповідача.</small></p>
-  <p style="text-align: center;">Supplier / Виконавець <img alt="" src="assets/signature.png" style="vertical-align: middle;"> {{invoiceData.supplier.nameEn}}
+  <p style="text-align: center;">Supplier / Виконавець <img alt="" [src]="model.formSupplier.get('signatureImage')?.value"
+                                                            class="signature"> {{invoiceData.supplier.nameEn}}
     / {{invoiceData.supplier.name}}</p>
 </ng-container>

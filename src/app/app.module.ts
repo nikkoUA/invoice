@@ -17,13 +17,15 @@ import {AppComponent} from './app.component';
 import {NumberInWordsPipe} from './number-in-words.pipe';
 import {ParamsComponent} from './params.component';
 import {ReplacePipe} from './replace.pipe';
+import {UploadFileDirective} from './upload-file.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     NumberInWordsPipe,
     ParamsComponent,
-    ReplacePipe
+    ReplacePipe,
+    UploadFileDirective
   ],
   imports: [
     BrowserModule,
