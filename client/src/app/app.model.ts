@@ -2,13 +2,13 @@ import {DatePipe} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Service} from 'src/app/service';
-import beneficiary from '../../data/beneficiary.json';
-import contract from '../../data/contract.json';
-import customer from '../../data/customer.json';
-import place from '../../data/place.json';
-import services from '../../data/services.json';
-import subjectMatter from '../../data/subject-matter.json';
-import supplier from '../../data/supplier.json';
+import beneficiary from '../../../data/beneficiary.json';
+import contract from '../../../data/contract.json';
+import customer from '../../../data/customer.json';
+import place from '../../../data/place.json';
+import services from '../../../data/services.json';
+import subjectMatter from '../../../data/subject-matter.json';
+import supplier from '../../../data/supplier.json';
 
 @Injectable({providedIn: 'root'})
 export class AppModel {
