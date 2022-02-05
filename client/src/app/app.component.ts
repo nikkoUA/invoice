@@ -1,5 +1,5 @@
 import {DOCUMENT} from '@angular/common';
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, fromEvent, map, Observable, skip, startWith} from 'rxjs';
 import {AppModel} from 'src/app/app.model';
@@ -11,7 +11,7 @@ import {InvoiceData} from './invoice-data';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private readonly dialogParams = {disableClose: true, width: '100%'};
 
   readonly invoiceData$ = (this.model.form.valueChanges as Observable<InvoiceData>).pipe(
@@ -33,9 +33,6 @@ export class AppComponent implements OnInit {
     this.dialog.afterAllClosed.pipe(skip(1)).subscribe(() => document.defaultView?.print());
     if (document.defaultView)
       fromEvent(document.defaultView, 'afterprint').subscribe(() => this.dialog.open(ParamsComponent, this.dialogParams));
-  }
-
-  ngOnInit(): void {
     this.dialog.open(ParamsComponent, this.dialogParams);
   }
 }

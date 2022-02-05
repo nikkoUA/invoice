@@ -1,6 +1,8 @@
 import {DatePipe} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {DomSanitizer} from '@angular/platform-browser';
+import {asapScheduler, debounceTime, map, startWith} from 'rxjs';
 import {Service} from 'src/app/service';
 import beneficiary from '../../../data/beneficiary.json';
 import contract from '../../../data/contract.json';
@@ -104,7 +106,12 @@ export class AppModel {
     return this.form.get('customer') as FormGroup;
   }
 
-  constructor(private readonly formBuilder: FormBuilder, private readonly datePipe: DatePipe) {
+  readonly invoiceData$ = this.form.valueChanges.pipe(
+    startWith(this.form.value),
+    debounceTime(0, asapScheduler),
+    map(() => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([JSON.stringify(this.form.value, null, 2)], {type: 'application/json'})))));
+
+  constructor(private readonly formBuilder: FormBuilder, private readonly datePipe: DatePipe, private readonly domSanitizer: DomSanitizer) {
     this.reset();
   }
 

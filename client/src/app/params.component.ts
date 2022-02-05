@@ -7,9 +7,6 @@ import {AppModel} from 'src/app/app.model';
   styleUrls: ['./params.component.scss']
 })
 export class ParamsComponent {
-  needSupplierData = this.model.formSupplier.invalid;
-  needBeneficiaryData = this.model.formBeneficiary.invalid;
-
   constructor(public readonly dialog: MatDialog, public readonly model: AppModel) {}
 
   print(): void {

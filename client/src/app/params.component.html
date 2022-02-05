@@ -2,6 +2,10 @@
   <div class="grid grid-2">
     <h2>Реквізити рахунку</h2>
     <div align="end">
+      <a #downloadLink [href]="model.invoiceData$ | async" download="invoice-data.json" style="display: none;"></a>
+      <button (click)="downloadLink.click()" color="primary" mat-icon-button tabindex="-1">
+        <mat-icon>save</mat-icon>
+      </button>
       <button (click)="model.reset()" color="accent" mat-icon-button tabindex="-1">
         <mat-icon>replay</mat-icon>
       </button>
@@ -100,7 +104,9 @@
           <input type="number" formControlName="amount" matInput>
         </mat-form-field>
         <div style="margin-top: 10px;">
-          <button mat-icon-button (click)="model.removeService(i)" color="accent" aria-label="Додати послугу">
+          <button mat-icon-button (click)="model.removeService(i)"
+                  [disabled]="model.formServicesGroups.length === 1 || model.formServices.invalid && service.valid"
+                  color="accent" aria-label="Додати послугу">
             <mat-icon>exposure_neg_1</mat-icon>
           </button>
         </div>
@@ -111,7 +117,7 @@
     </fieldset>
     <br>
     <mat-accordion multi>
-      <mat-expansion-panel formGroupName="supplier" expanded="{{needSupplierData}}">
+      <mat-expansion-panel formGroupName="supplier" expanded="{{model.formSupplier.invalid}}">
         <mat-expansion-panel-header>
           <mat-panel-title>Виконавець</mat-panel-title>
         </mat-expansion-panel-header>
@@ -155,7 +161,7 @@
         </div>
       </mat-expansion-panel>
 
-      <mat-expansion-panel formGroupName="beneficiary" expanded="{{needBeneficiaryData}}">
+      <mat-expansion-panel formGroupName="beneficiary" expanded="{{model.formBeneficiary.invalid}}">
         <mat-expansion-panel-header>
           <mat-panel-title>Реквізити банківського рахунку</mat-panel-title>
         </mat-expansion-panel-header>
