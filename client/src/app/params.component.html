@@ -2,14 +2,21 @@
   <div class="grid grid-2">
     <h2>Реквізити рахунку</h2>
     <div align="end">
-      <a #downloadLink [href]="model.invoiceData$ | async" download="invoice-data.json" style="display: none;"></a>
-      <button (click)="downloadLink.click()" color="primary" mat-icon-button tabindex="-1">
-        <mat-icon>save</mat-icon>
+      <div style="display: inline-block; position: relative; overflow: hidden; vertical-align: middle;">
+        <button mat-icon-button color="primary" title="Завантажити резервну копію реквізитів" tabindex="-1">
+          <mat-icon>upload</mat-icon>
+        </button>
+        <input #uploadInvoiceInput (change)="model.uploadInvoiceData(uploadInvoiceInput)" type="file" accept="application/json"
+               tabindex="-1" style="cursor: pointer;">
+      </div>
+      <a #downloadLink [href]="model.invoiceData$ | async" download="invoice-data_{{model.currentDate | date:'YYYYMMdd'}}.json" style="display: none;"></a>
+      <button (click)="downloadLink.click(); model.save();" mat-icon-button color="primary" title="Зберегти резервну копію реквізитів" tabindex="-1">
+        <mat-icon>download</mat-icon>
       </button>
-      <button (click)="model.reset()" color="accent" mat-icon-button tabindex="-1">
+      <button (click)="model.reset()" mat-icon-button color="accent" title="Відмінити зміни" tabindex="-1">
         <mat-icon>replay</mat-icon>
       </button>
-      <button (click)="print()" [disabled]="model.form.invalid" color="primary" mat-icon-button>
+      <button (click)="print()" [disabled]="model.form.invalid" mat-icon-button color="primary" title="Надрукувати">
         <mat-icon>print</mat-icon>
       </button>
     </div>
@@ -146,9 +153,13 @@
           </mat-form-field>
         </div>
         <div class="grid grid-2">
-          <mat-form-field #signatureFileFormField appearance="outline">
+          <mat-form-field #signatureFileFormField appearance="outline" style="overflow: hidden;">
             <mat-label>Файл зображення підпису</mat-label>
             <input (focus)="signatureFileInput.focus()" formControlName="signatureImageName" matInput autocomplete="off" readonly>
+            <button *ngIf="model.formSupplier.get('signatureImageName')?.value"
+                    mat-icon-button matSuffix (click)="model.deleteSignature()" [attr.aria-label]="'Видалити зображення'">
+              <mat-icon>delete</mat-icon>
+            </button>
             <input #signatureFileInput [uploadFile]="model.formSupplier.get('signatureImage')" [uploadFileName]="model.formSupplier.get('signatureImageName')"
                    (focus)="signatureFileFormField._elementRef.nativeElement.classList.add('mat-focused');"
                    (blur)="signatureFileFormField._elementRef.nativeElement.classList.remove('mat-focused')"

@@ -1,5 +1,29 @@
 @use '@angular/material' as mat;
 
+body ::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+}
+
+body ::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 0;
+}
+
+body ::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 5px;
+  background: rgba(128, 135, 139, 0.8);
+  -webkit-transition: color 0.2s ease;
+  transition: color 0.2s ease;
+}
+
+* {
+  scrollbar-color: rgba(128, 135, 139, 0.8) transparent;
+  scrollbar-width: thin;
+}
+
 html, body {
   height: 100%;
 }
@@ -43,8 +67,16 @@ fieldset {
   }
 }
 
+div.signature {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 85px;
+  margin: 0 1rem;
+}
+
 img.signature {
-  max-width: 275px;
+  max-width: 100%;
   max-height: 85px;
   vertical-align: middle;
 }

@@ -1,20 +1,14 @@
-import {DatePipe} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {DatePipe, DOCUMENT} from '@angular/common';
+import {Inject, Injectable} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
-import {asapScheduler, debounceTime, map, startWith} from 'rxjs';
+import {asapScheduler, debounceTime, fromEvent, map, shareReplay, Subject, withLatestFrom} from 'rxjs';
 import {Service} from 'src/app/service';
-import beneficiary from '../../../data/beneficiary.json';
-import contract from '../../../data/contract.json';
-import customer from '../../../data/customer.json';
-import place from '../../../data/place.json';
-import services from '../../../data/services.json';
-import subjectMatter from '../../../data/subject-matter.json';
-import supplier from '../../../data/supplier.json';
+import {InvoiceData} from './invoice-data';
 
 @Injectable({providedIn: 'root'})
 export class AppModel {
-  private readonly currentDate = new Date();
+  readonly currentDate = new Date();
   private readonly date = this.currentDate.getDate() > 15
     ? new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1)
     : new Date(this.currentDate.getFullYear(), this.currentDate.getMonth());
@@ -50,8 +44,8 @@ export class AppModel {
       itn: ['', Validators.required],
       address: ['', Validators.required],
       addressEn: ['', Validators.required],
-      signatureImage: ['', Validators.required],
-      signatureImageName: ['', Validators.required]
+      signatureImage: '',
+      signatureImageName: ''
     }),
 
     beneficiary: this.formBuilder.group({
@@ -60,17 +54,17 @@ export class AppModel {
       bank: ['', Validators.required],
       swiftCode: ['', Validators.required],
       bankCity: ['', Validators.required],
-      intermediaryBank: [''],
-      intermediaryBankAccountNumber: [''],
-      intermediaryBankSwiftCode: [''],
-      intermediaryBankCity: ['']
+      intermediaryBank: '',
+      intermediaryBankAccountNumber: '',
+      intermediaryBankSwiftCode: '',
+      intermediaryBankCity: ''
     }),
 
     customer: this.formBuilder.group({
-      customer: [''],
-      customerCountry: [''],
-      customerAddress1: [''],
-      customerAddress2: ['']
+      customer: '',
+      customerCountry: '',
+      customerAddress1: '',
+      customerAddress2: ''
     })
   });
 
@@ -107,28 +101,97 @@ export class AppModel {
   }
 
   readonly invoiceData$ = this.form.valueChanges.pipe(
-    startWith(this.form.value),
     debounceTime(0, asapScheduler),
-    map(() => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([JSON.stringify(this.form.value, null, 2)], {type: 'application/json'})))));
+    map(x => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([JSON.stringify(x, null, 2)], {type: 'application/json'})))),
+    shareReplay(1));
 
-  constructor(private readonly formBuilder: FormBuilder, private readonly datePipe: DatePipe, private readonly domSanitizer: DomSanitizer) {
+  private readonly uploadInvoiceDataReader = new FileReader();
+  private readonly resetSubject = new Subject<void>();
+  private readonly saveSubject = new Subject<void>();
+
+  constructor(
+    @Inject(DOCUMENT) doc: Document,
+    private readonly formBuilder: FormBuilder,
+    private readonly datePipe: DatePipe,
+    private readonly domSanitizer: DomSanitizer
+  ) {
+    fromEvent<ProgressEvent>(this.uploadInvoiceDataReader, 'load').pipe(
+      map(x => {
+        try {
+          const result = (x.target as FileReader).result;
+          return typeof result === 'string' ? JSON.parse(result) : null;
+        }
+        catch (e) {
+          console.warn(e);
+          return null;
+        }
+      })).subscribe(x => {
+      if (x) this.resetForm(x);
+    });
+
+    const win = doc.defaultView;
+
+    this.resetSubject.subscribe(() => {
+      if (win) {
+        try {
+          const invoiceData = win.localStorage.getItem('invoiceData');
+          if (invoiceData) this.resetForm(JSON.parse(invoiceData));
+          else this.resetForm({});
+        }
+        catch (e) {
+          console.warn(e);
+          this.resetForm({});
+        }
+      }
+      else {
+        this.resetForm({});
+      }
+    });
+
+    if (win) {
+      this.saveSubject.pipe(withLatestFrom(this.form.valueChanges)).subscribe(([, x]) => {
+        win.localStorage.setItem('invoiceData', JSON.stringify(x));
+      });
+    }
+
+    this.invoiceData$.subscribe();
     this.reset();
   }
 
-  reset(): void {
+  private resetForm(invoiceData: InvoiceData): void {
     this.form.get('number')?.reset(this.datePipe.transform(this.date, 'y-M'));
     this.form.get('date')?.reset(this.date);
     this.form.get('periodStart')?.reset(this.periodStart);
     this.form.get('periodEnd')?.reset(this.periodEnd);
-    this.formPlace.reset(place);
-    this.formContract.reset(Object.assign({}, contract, {contractDate: new Date(contract.contractDate)}));
-    this.formSubjectMatter.reset(subjectMatter);
-    this.formSupplier.reset(supplier);
-    this.formBeneficiary.reset(beneficiary);
-    this.formCustomer.reset(customer);
+    this.formPlace.reset(invoiceData.place || {});
+    this.formContract.reset(Object.assign(
+      {},
+      invoiceData.contract || {},
+      invoiceData.contract?.contractDate ? {contractDate: new Date(invoiceData.contract.contractDate)} : {}));
+    this.formSubjectMatter.reset(invoiceData.subjectMatter || {});
+    this.formSupplier.reset(invoiceData.supplier || {});
+    this.formBeneficiary.reset(invoiceData.beneficiary || {});
+    this.formCustomer.reset(invoiceData.customer || {});
     for (let i = this.formServices.length; i > 0; i--) this.removeService(i - 1);
     this.formServices.reset();
-    services.forEach(service => this.formServices.push(this.createService(service)));
+    (invoiceData.services || []).forEach(service => this.formServices.push(this.createService(service)));
+  }
+
+  uploadInvoiceData(input: HTMLInputElement): void {
+    if (input.files && input.files[0]) this.uploadInvoiceDataReader.readAsText(input.files[0]);
+  }
+
+  reset(): void {
+    this.resetSubject.next();
+  }
+
+  save(): void {
+    this.saveSubject.next();
+  }
+
+  deleteSignature(): void {
+    this.formSupplier.get('signatureImage')?.setValue('');
+    this.formSupplier.get('signatureImageName')?.setValue('');
   }
 
   addService(): void {

@@ -10,7 +10,7 @@ export class UploadFileDirective {
   uploadFileName: AbstractControl | null | undefined;
 
   @HostListener('change', ['$event.target.files'])
-  onChange(files: FileList) {
+  onChange(files: FileList): void {
     if (files[0]) {
       const reader = new FileReader();
       reader.onload = e => {

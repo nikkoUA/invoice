@@ -1,21 +1,25 @@
 <ng-container *ngIf="invoiceData$ | async as invoiceData">
   <h1 class="mat-h1" style="text-align: center;">Invoice / Рахунок No. / № {{invoiceData.number}}</h1>
   <div class="grid grid-2">
-    <div><b>Date and Place:</b> {{invoiceData.date | date:'shortDate'}}, {{invoiceData.place.placeEn}}</div>
-    <div><b>Дата та місце:</b> {{invoiceData.date | date:'dd.MM.y'}}, {{invoiceData.place.place}}</div>
+    <ng-container *ngIf="invoiceData.place">
+      <div><b>Date and Place:</b> {{invoiceData.date | date:'shortDate'}}, {{invoiceData.place.placeEn}}</div>
+      <div><b>Дата та місце:</b> {{invoiceData.date | date:'dd.MM.y'}}, {{invoiceData.place.place}}</div>
+    </ng-container>
 
-    <div>
-      <p><b>Supplier:</b> Individual Entrepreneur {{invoiceData.supplier.nameEn}}</p>
-      <p>Address: {{invoiceData.supplier.addressEn}}</p>
-      <p>Individual Tax Number: {{invoiceData.supplier.itn}}</p>
-    </div>
-    <div>
-      <p><b>Виконавець:</b> ФОП {{invoiceData.supplier.name}}</p>
-      <p>Адреса: {{invoiceData.supplier.address}}</p>
-      <p>ІПН: {{invoiceData.supplier.itn}}</p>
-    </div>
+    <ng-container *ngIf="invoiceData.supplier">
+      <div>
+        <p><b>Supplier:</b> Individual Entrepreneur {{invoiceData.supplier.nameEn}}</p>
+        <p>Address: {{invoiceData.supplier.addressEn}}</p>
+        <p>Individual Tax Number: {{invoiceData.supplier.itn}}</p>
+      </div>
+      <div>
+        <p><b>Виконавець:</b> ФОП {{invoiceData.supplier.name}}</p>
+        <p>Адреса: {{invoiceData.supplier.address}}</p>
+        <p>ІПН: {{invoiceData.supplier.itn}}</p>
+      </div>
+    </ng-container>
 
-    <ng-container *ngIf="invoiceData.customer.customer">
+    <ng-container *ngIf="invoiceData.customer && invoiceData.customer.customer">
       <div>
         <p><b>Customer:</b> {{invoiceData.customer.customer}}</p>
         <p *ngIf="invoiceData.customer.customerAddress1">{{invoiceData.customer.customerAddress1}}</p>
@@ -30,8 +34,10 @@
       </div>
     </ng-container>
 
-    <div><b>Subject matter:</b> {{invoiceData.subjectMatter.subjectMatterEn}}</div>
-    <div><b>Предмет:</b> {{invoiceData.subjectMatter.subjectMatter}}</div>
+    <ng-container *ngIf="invoiceData.subjectMatter">
+      <div><b>Subject matter:</b> {{invoiceData.subjectMatter.subjectMatterEn}}</div>
+      <div><b>Предмет:</b> {{invoiceData.subjectMatter.subjectMatter}}</div>
+    </ng-container>
 
     <div><b>Currency:</b> USD</div>
     <div><b>Валюта:</b> Долар США</div>
@@ -41,17 +47,17 @@
       <div><b>Ціна (загальна вартість) послуг:</b> {{total | number:'1.2-2':'uk_UA'}}</div>
     </ng-container>
 
-    <div>
+    <div *ngIf="invoiceData.supplier">
       <p><b>Terms of payments and acceptation:</b></p>
-      <div>
+      <div *ngIf="invoiceData.subjectMatter">
         Payment for {{invoiceData.subjectMatter.subjectMatterEn}} as per invoice No{{invoiceData.number | replace:'-':' '}}
         from {{invoiceData.date | date:'yMMdd'}}
-        <ng-container *ngIf="invoiceData.contract.contract && invoiceData.contract.contractDate">
+        <ng-container *ngIf="invoiceData.contract && invoiceData.contract.contract && invoiceData.contract.contractDate">
           according to Contract No{{invoiceData.contract.contract | replace:'-':' '}} from {{invoiceData.contract.contractDate | date:'yMMdd'}}
         </ng-container>
       </div>
     </div>
-    <div>
+    <div *ngIf="invoiceData.beneficiary">
       <p><b>Beneficiary:</b></p>
       <p>IBAN: {{invoiceData.beneficiary.iban}}</p>
       <p>Receiver: {{invoiceData.beneficiary.receiver}}</p>
@@ -113,17 +119,17 @@
   <p><small>Payment hereof at the same time is the evidence of the work performance and the service delivery, acceptation thereof in full scope and the
     confirmation of final mutual installments between Parties. /<br>
     Оплата згідно цього Інвойсу одночасно є свідченням виконання робіт, надання послуг, їх прийняття в повному обсязі, а також підтвердженням кінцевих
-    розрахунків
-    між Сторонами.</small></p>
+    розрахунків між Сторонами.</small></p>
   <p><small>The Parties shall not be liable for non-performance or improper performance of the obligations under the agreement during the termof insuperable
-    force
-    circumstances. /<br>
+    force circumstances. /<br>
     Сторони звільняються від відповідальності за невиконання чи неналежне виконання зобов’язань за договором на час дії форс-мажорних обставин.</small></p>
   <p><small>Payment according hereto shall be also the confirmation that Parties have no claims to each other and have no intention to submit any claims. /<br>
     Оплата згідно цього Інвойсу є підтвердженням того, що Сторони не мають взаємних претензій та не мають наміру направляти рекламації.</small></p>
   <p><small>Any disputes arising out of the agreement between the Parties shall be settled by the competent court at the location of a defendant. /<br>
     Всі спори, що виникнуть між Сторонами по угоді будуть розглядатись компетентним судом за місцезнаходження відповідача.</small></p>
-  <p style="text-align: center;">Supplier / Виконавець <img alt="" [src]="model.formSupplier.get('signatureImage')?.value"
-                                                            class="signature"> {{invoiceData.supplier.nameEn}}
-    / {{invoiceData.supplier.name}}</p>
+  <div *ngIf="invoiceData.supplier" class="signature">
+    <span>Supplier / Виконавець</span>
+    <img *ngIf="invoiceData.supplier.signatureImage" alt="" [src]="invoiceData.supplier.signatureImage" class="signature">
+    <span>{{invoiceData.supplier.nameEn}} / {{invoiceData.supplier.name}}</span>
+  </div>
 </ng-container>
