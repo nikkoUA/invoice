@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
-    "build": "ng build",
+    "build": "ng build && node ./deploy.js",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,
@@ -27,6 +27,7 @@
     "@angular/cli": "~13.1.2",
     "@angular/compiler-cli": "~13.1.0",
     "@types/node": "^16.11.17",
+    "cheerio": "^1.0.0-rc.10",
     "typescript": "~4.5.2"
   }
 }

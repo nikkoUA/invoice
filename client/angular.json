@@ -62,7 +62,7 @@
                 "minify": true,
                 "inlineCritical": false
               },
-              "fonts": false
+              "fonts": true
             }
           },
           "configurations": {
