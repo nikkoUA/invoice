@@ -21,6 +21,7 @@ export interface InvoiceData {
     readonly subjectMatterEn: string;
   };
 
+  readonly defaultPrice?: number;
   readonly services?: ReadonlyArray<Service>;
 
   readonly supplier?: {

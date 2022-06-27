@@ -87,6 +87,10 @@
       </div>
     </div>
 
+    <mat-form-field appearance="outline">
+      <mat-label>Ціна за годину</mat-label>
+      <input formControlName="defaultPrice" matInput>
+    </mat-form-field>
     <fieldset formArrayName="services" class="mat-expansion-panel mat-expanded">
       <legend>Послуги</legend>
       <div *ngFor="let service of model.formServicesGroups; index as i" [formGroup]="service" class="grid grid-5">
@@ -98,6 +102,7 @@
           <mat-label>Description</mat-label>
           <input formControlName="descriptionEn" matInput>
         </mat-form-field>
+        <mat-checkbox formControlName="appendPeriod" color="primary">Додати період</mat-checkbox>
         <mat-form-field *ngIf="!service.get('amount')?.value" appearance="outline">
           <mat-label>Кількість (час)</mat-label>
           <input type="number" formControlName="quantity" matInput>
