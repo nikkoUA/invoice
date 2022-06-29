@@ -1,0 +1,271 @@
+<div class="grid grid-2">
+  <h2>Реквізити рахунку</h2>
+  <div align="end">
+    <div style="display: inline-block; position: relative; overflow: hidden; vertical-align: middle;">
+      <button mat-icon-button color="primary" title="Завантажити резервну копію реквізитів" tabindex="-1">
+        <mat-icon>upload</mat-icon>
+      </button>
+      <input #uploadInvoiceInput (change)="model.uploadInvoiceData(uploadInvoiceInput)" type="file" accept="application/json"
+             tabindex="-1" style="cursor: pointer;">
+    </div>
+    <a #downloadLink [href]="model.invoiceData$ | async" download="invoice-data_{{model.currentDate | date:'YYYYMMdd'}}.json" style="display: none;"></a>
+    <button (click)="downloadLink.click(); model.save();" mat-icon-button color="primary" title="Зберегти резервну копію реквізитів" tabindex="-1">
+      <mat-icon>download</mat-icon>
+    </button>
+    <button (click)="model.reset()" mat-icon-button color="accent" title="Відмінити зміни" tabindex="-1">
+      <mat-icon>replay</mat-icon>
+    </button>
+    <button (click)="print($event)" [disabled]="model.form.invalid" mat-icon-button color="primary" title="Надрукувати">
+      <mat-icon>print</mat-icon>
+    </button>
+  </div>
+</div>
+<form [formGroup]="model.form">
+  <div class="grid grid-4">
+    <mat-form-field>
+      <mat-label>Номер рахунку</mat-label>
+      <input formControlName="number" matInput>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Дата рахунку</mat-label>
+      <input formControlName="date" [matDatepicker]="pickerDate" matInput>
+      <mat-datepicker-toggle [for]="pickerDate" matSuffix></mat-datepicker-toggle>
+      <mat-datepicker #pickerDate color="primary"></mat-datepicker>
+    </mat-form-field>
+    <ng-container formGroupName="place">
+      <mat-form-field>
+        <mat-label>Місце</mat-label>
+        <input formControlName="place" matInput>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Place</mat-label>
+        <input formControlName="placeEn" matInput>
+      </mat-form-field>
+    </ng-container>
+  </div>
+  <div class="grid grid-4">
+    <ng-container formGroupName="contract">
+      <mat-form-field>
+        <mat-label>Договір №</mat-label>
+        <input formControlName="contract" matInput>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Від</mat-label>
+        <input formControlName="contractDate" [matDatepicker]="pickerContractDate" matInput>
+        <mat-datepicker-toggle [for]="pickerContractDate" matSuffix></mat-datepicker-toggle>
+        <mat-datepicker #pickerContractDate color="primary"></mat-datepicker>
+      </mat-form-field>
+    </ng-container>
+    <mat-form-field>
+      <mat-label>Початок періоду</mat-label>
+      <input formControlName="periodStart" [matDatepicker]="pickerPeriodStart" matInput>
+      <mat-datepicker-toggle [for]="pickerPeriodStart" matSuffix></mat-datepicker-toggle>
+      <mat-datepicker #pickerPeriodStart color="primary"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Кінець періоду</mat-label>
+      <input formControlName="periodEnd" [matDatepicker]="pickerPeriodEnd" matInput>
+      <mat-datepicker-toggle [for]="pickerPeriodEnd" matSuffix></mat-datepicker-toggle>
+      <mat-datepicker #pickerPeriodEnd color="primary"></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div formGroupName="subjectMatter" class="grid grid-2" style="grid-column-start: 1; grid-column-end: 3">
+    <mat-form-field>
+      <mat-label>Предмет</mat-label>
+      <input formControlName="subjectMatter" matInput>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Subject matter</mat-label>
+      <input formControlName="subjectMatterEn" matInput>
+    </mat-form-field>
+  </div>
+
+  <fieldset class="mat-expansion-panel mat-expanded">
+    <legend>Послуги</legend>
+    <div class="grid grid-4">
+      <div style="grid-column-start: 1; grid-column-end: 4;">
+        <div class="grid grid-2">
+          <mat-form-field>
+            <mat-label>Опис за замовчуванням</mat-label>
+            <input formControlName="defaultDescription" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Default description</mat-label>
+            <input formControlName="defaultDescriptionEn" matInput>
+          </mat-form-field>
+        </div>
+      </div>
+      <mat-form-field>
+        <mat-label>Ціна за годину за замовчуванням</mat-label>
+        <input formControlName="defaultPrice" matInput>
+      </mat-form-field>
+    </div>
+    <ng-container formArrayName="services">
+      <ng-container *ngFor="let service of model.formServicesGroups; index as i" [formGroup]="service">
+        <div class="grid grid-2">
+          <mat-form-field>
+            <mat-label>Опис</mat-label>
+            <input formControlName="description" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Description</mat-label>
+            <input formControlName="descriptionEn" matInput>
+          </mat-form-field>
+        </div>
+        <div class="grid grid-3">
+          <mat-form-field>
+            <mat-label>Кількість (час)</mat-label>
+            <input type="number" formControlName="quantity" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Ціна (USD)</mat-label>
+            <input type="number" formControlName="price" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Загальна вартість (USD)</mat-label>
+            <input type="number" formControlName="amount" matInput>
+          </mat-form-field>
+        </div>
+        <div class="grid grid-2">
+          <div>
+            <mat-checkbox formControlName="appendPeriod" color="primary">Додати період до опису послуги</mat-checkbox>
+          </div>
+          <div style="text-align: right;">
+            <button mat-button (click)="model.removeService(i)"
+                    [disabled]="model.formServicesGroups.length === 1 || model.formServices.invalid && service.valid"
+                    color="accent">
+              Видалити послугу
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <hr>
+    <button mat-button (click)="model.addService()" color="primary" aria-label="Додати послугу">Додати послугу</button>
+  </fieldset>
+  <br>
+  <mat-accordion multi>
+    <mat-expansion-panel formGroupName="supplier" expanded="{{model.formSupplier.invalid}}">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Виконавець</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid grid-3">
+        <mat-form-field>
+          <mat-label>Ім'я</mat-label>
+          <input formControlName="name" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input formControlName="nameEn" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>ІПН</mat-label>
+          <input formControlName="itn" matInput>
+        </mat-form-field>
+      </div>
+      <div class="grid grid-2">
+        <mat-form-field>
+          <mat-label>Адреса</mat-label>
+          <input formControlName="address" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Address</mat-label>
+          <input formControlName="addressEn" matInput>
+        </mat-form-field>
+      </div>
+      <div class="grid grid-2">
+        <mat-form-field #signatureFileFormField style="overflow: hidden;">
+          <mat-label>Файл зображення підпису</mat-label>
+          <input (focus)="signatureFileInput.focus()" formControlName="signatureImageName" matInput autocomplete="off" readonly>
+          <button *ngIf="model.formSupplier.get('signatureImageName')?.value"
+                  mat-icon-button matSuffix (click)="model.deleteSignature()" [attr.aria-label]="'Видалити зображення'">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <input #signatureFileInput [uploadFile]="model.formSupplier.get('signatureImage')" [uploadFileName]="model.formSupplier.get('signatureImageName')"
+                 (focus)="signatureFileFormField._elementRef.nativeElement.classList.add('mat-focused');"
+                 (blur)="signatureFileFormField._elementRef.nativeElement.classList.remove('mat-focused')"
+                 type="file" accept="image/*" tabindex="-1">
+          <mat-hint>Зображення повинно бути з прозорим або білим фоном та розміром не більше 275х85px</mat-hint>
+        </mat-form-field>
+        <div>
+          <img [src]="model.formSupplier.get('signatureImage')?.value" [alt]="model.formSupplier.get('signatureImageName')?.value" class="signature">
+        </div>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel formGroupName="beneficiary" expanded="{{model.formBeneficiary.invalid}}">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Реквізити банківського рахунку</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid grid-3">
+        <mat-form-field>
+          <mat-label>IBAN</mat-label>
+          <input formControlName="iban" matInput>
+        </mat-form-field>
+        <mat-form-field style="grid-column-start: 2; grid-column-end: 4;">
+          <mat-label>Receiver</mat-label>
+          <input formControlName="receiver" matInput>
+        </mat-form-field>
+      </div>
+      <div class="grid grid-3">
+        <mat-form-field>
+          <mat-label>Bank</mat-label>
+          <input formControlName="bank" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Swift Code</mat-label>
+          <input formControlName="swiftCode" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Bank City</mat-label>
+          <input formControlName="bankCity" matInput>
+        </mat-form-field>
+      </div>
+      <h4>Intermediary Bank</h4>
+      <div class="grid grid-2">
+        <mat-form-field>
+          <mat-label>Bank</mat-label>
+          <input formControlName="intermediaryBank" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Account Number</mat-label>
+          <input formControlName="intermediaryBankAccountNumber" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Swift Code</mat-label>
+          <input formControlName="intermediaryBankSwiftCode" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Bank City</mat-label>
+          <input formControlName="intermediaryBankCity" matInput>
+        </mat-form-field>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel formGroupName="customer">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Замовник</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="grid grid-2">
+        <mat-form-field>
+          <mat-label>Назва</mat-label>
+          <input formControlName="customer" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Страна</mat-label>
+          <input formControlName="customerCountry" matInput>
+        </mat-form-field>
+      </div>
+      <div class="grid grid-2">
+        <mat-form-field>
+          <mat-label>Адреса</mat-label>
+          <input formControlName="customerAddress1" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Адреса (друга строка)</mat-label>
+          <input formControlName="customerAddress2" matInput>
+        </mat-form-field>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</form>

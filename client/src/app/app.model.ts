@@ -1,6 +1,6 @@
 import {DatePipe, DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
 import {asapScheduler, debounceTime, fromEvent, map, shareReplay, Subject, withLatestFrom} from 'rxjs';
 import {Service} from 'src/app/service';
@@ -36,12 +36,15 @@ export class AppModel {
       subjectMatterEn: ['', Validators.required]
     }),
 
+    defaultPrice: 0,
+    defaultDescription: ['', Validators.required],
+    defaultDescriptionEn: ['', Validators.required],
     services: this.formBuilder.array([]),
 
     supplier: this.formBuilder.group({
       name: ['', Validators.required],
       nameEn: ['', Validators.required],
-      itn: ['', Validators.required],
+      itn: '',
       address: ['', Validators.required],
       addressEn: ['', Validators.required],
       signatureImage: '',
@@ -100,6 +103,18 @@ export class AppModel {
     return this.form.get('customer') as FormGroup;
   }
 
+  get defaultPrice() {
+    return this.form.get('defaultPrice') as FormControl;
+  }
+
+  get defaultDescription() {
+    return this.form.get('defaultDescription') as FormControl;
+  }
+
+  get defaultDescriptionEn() {
+    return this.form.get('defaultDescriptionEn') as FormControl;
+  }
+
   readonly invoiceData$ = this.form.valueChanges.pipe(
     debounceTime(0, asapScheduler),
     map(x => this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(new Blob([JSON.stringify(x, null, 2)], {type: 'application/json'})))),
@@ -126,7 +141,7 @@ export class AppModel {
           return null;
         }
       })).subscribe(x => {
-      if (x) this.resetForm(x);
+      if (x) this.resetForm(x, true);
     });
 
     const win = doc.defaultView;
@@ -158,11 +173,19 @@ export class AppModel {
     this.reset();
   }
 
-  private resetForm(invoiceData: InvoiceData): void {
-    this.form.get('number')?.reset(this.datePipe.transform(this.date, 'y-M'));
-    this.form.get('date')?.reset(this.date);
-    this.form.get('periodStart')?.reset(this.periodStart);
-    this.form.get('periodEnd')?.reset(this.periodEnd);
+  private resetForm(invoiceData: InvoiceData, fromFile: boolean = false): void {
+    if (fromFile) {
+      this.form.get('number')?.reset(invoiceData.number || this.datePipe.transform(this.date, 'y-M'));
+      this.form.get('date')?.reset(invoiceData.date || this.date);
+      this.form.get('periodStart')?.reset(invoiceData.periodStart || this.periodStart);
+      this.form.get('periodEnd')?.reset(invoiceData.periodEnd || this.periodEnd);
+    }
+    else {
+      this.form.get('number')?.reset(this.datePipe.transform(this.date, 'y-M'));
+      this.form.get('date')?.reset(this.date);
+      this.form.get('periodStart')?.reset(this.periodStart);
+      this.form.get('periodEnd')?.reset(this.periodEnd);
+    }
     this.formPlace.reset(invoiceData.place || {});
     this.formContract.reset(Object.assign(
       {},
@@ -173,8 +196,12 @@ export class AppModel {
     this.formBeneficiary.reset(invoiceData.beneficiary || {});
     this.formCustomer.reset(invoiceData.customer || {});
     for (let i = this.formServices.length; i > 0; i--) this.removeService(i - 1);
+    this.defaultPrice.reset(invoiceData.defaultPrice || 0);
+    this.defaultDescription.reset(invoiceData.defaultDescription || 'Розробка програмного забезпечення');
+    this.defaultDescriptionEn.reset(invoiceData.defaultDescriptionEn || 'Software Development');
     this.formServices.reset();
-    (invoiceData.services || []).forEach(service => this.formServices.push(this.createService(service)));
+    if (fromFile) (invoiceData.services || []).forEach(service => this.formServices.push(this.createService(service)));
+    else this.addService();
   }
 
   uploadInvoiceData(input: HTMLInputElement): void {
@@ -209,12 +236,20 @@ export class AppModel {
       const day = (new Date(periodYear, periodMonth, i)).getDay();
       return q + (day && day < 6 && x || 0);
     }, 0);
-    return this.formBuilder.group({
-      description: [service?.description, Validators.required],
-      descriptionEn: [service?.descriptionEn, Validators.required],
+    const formGroup = this.formBuilder.group({
+      description: [service?.description || this.defaultDescription.value, Validators.required],
+      descriptionEn: [service?.descriptionEn || this.defaultDescriptionEn.value, Validators.required],
+      appendPeriod: service?.appendPeriod !== false,
       quantity: service?.amount ? [] : [service?.quantity || defaultQuantity],
-      price: [service?.price, Validators.required],
+      price: [service?.price || this.defaultPrice.value, Validators.required],
       amount: [service?.amount]
     });
+    formGroup.get('amount')?.valueChanges.pipe(debounceTime(0)).subscribe(x => {
+      if (x) formGroup.get('quantity')?.reset(null);
+    });
+    formGroup.get('quantity')?.valueChanges.pipe(debounceTime(0)).subscribe(x => {
+      if (x) formGroup.get('amount')?.reset(null);
+    });
+    return formGroup;
   }
 }
