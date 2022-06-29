@@ -21,4 +21,4 @@
 
 ## Запуск
 
-Відкрити браузером файл [invoice.html](https://github.com/nikkoUA/invoice/releases/download/v.1.0.0/invoice.html). Ви можете зберегти його на своєму пристрої.
+Відкрити браузером файл [invoice.html](https://github.com/nikkoUA/invoice/releases/download/v.1.1.0/invoice.html). Ви можете зберегти його на своєму пристрої.
