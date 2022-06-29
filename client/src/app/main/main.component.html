@@ -1,4 +1,4 @@
-<ng-container *ngIf="invoiceData$ | async as invoiceData">
+<div *ngIf="invoiceData$ | async as invoiceData">
   <h1 class="mat-h1" style="text-align: center;">Invoice / Рахунок No. / № {{invoiceData.number}}</h1>
   <div class="grid grid-2">
     <ng-container *ngIf="invoiceData.place">
@@ -8,14 +8,14 @@
 
     <ng-container *ngIf="invoiceData.supplier">
       <div>
-        <p><b>Supplier:</b> Individual Entrepreneur {{invoiceData.supplier.nameEn}}</p>
+        <p><b>Supplier:</b> {{invoiceData.supplier.nameEn}}</p>
         <p>Address: {{invoiceData.supplier.addressEn}}</p>
-        <p>Individual Tax Number: {{invoiceData.supplier.itn}}</p>
+        <p *ngIf="invoiceData.supplier.itn">Individual Tax Number: {{invoiceData.supplier.itn}}</p>
       </div>
       <div>
-        <p><b>Виконавець:</b> ФОП {{invoiceData.supplier.name}}</p>
+        <p><b>Виконавець:</b> {{invoiceData.supplier.name}}</p>
         <p>Адреса: {{invoiceData.supplier.address}}</p>
-        <p>ІПН: {{invoiceData.supplier.itn}}</p>
+        <p *ngIf="invoiceData.supplier.itn">ІПН: {{invoiceData.supplier.itn}}</p>
       </div>
     </ng-container>
 
@@ -137,4 +137,5 @@
     <img *ngIf="invoiceData.supplier.signatureImage" alt="" [src]="invoiceData.supplier.signatureImage" class="signature">
     <span>{{invoiceData.supplier.nameEn}} / {{invoiceData.supplier.name}}</span>
   </div>
-</ng-container>
+</div>
+<params></params>

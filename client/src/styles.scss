@@ -100,7 +100,6 @@ $theme: mat.define-light-theme((
 @include mat.core-theme($theme);
 @include mat.button-theme($theme);
 @include mat.datepicker-theme($theme);
-@include mat.dialog-theme($theme);
 @include mat.expansion-theme($theme);
 @include mat.form-field-theme($theme);
 @include mat.input-theme($theme);

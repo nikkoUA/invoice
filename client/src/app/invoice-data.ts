@@ -22,12 +22,14 @@ export interface InvoiceData {
   };
 
   readonly defaultPrice?: number;
+  readonly defaultDescription?: string;
+  readonly defaultDescriptionEn?: string;
   readonly services?: ReadonlyArray<Service>;
 
   readonly supplier?: {
     readonly name: string;
     readonly nameEn: string;
-    readonly itn: string;
+    readonly itn?: string;
     readonly address: string;
     readonly addressEn: string;
     readonly signatureImage?: string;

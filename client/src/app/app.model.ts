@@ -37,12 +37,14 @@ export class AppModel {
     }),
 
     defaultPrice: 0,
+    defaultDescription: ['', Validators.required],
+    defaultDescriptionEn: ['', Validators.required],
     services: this.formBuilder.array([]),
 
     supplier: this.formBuilder.group({
       name: ['', Validators.required],
       nameEn: ['', Validators.required],
-      itn: ['', Validators.required],
+      itn: '',
       address: ['', Validators.required],
       addressEn: ['', Validators.required],
       signatureImage: '',
@@ -103,6 +105,14 @@ export class AppModel {
 
   get defaultPrice() {
     return this.form.get('defaultPrice') as FormControl;
+  }
+
+  get defaultDescription() {
+    return this.form.get('defaultDescription') as FormControl;
+  }
+
+  get defaultDescriptionEn() {
+    return this.form.get('defaultDescriptionEn') as FormControl;
   }
 
   readonly invoiceData$ = this.form.valueChanges.pipe(
@@ -187,6 +197,8 @@ export class AppModel {
     this.formCustomer.reset(invoiceData.customer || {});
     for (let i = this.formServices.length; i > 0; i--) this.removeService(i - 1);
     this.defaultPrice.reset(invoiceData.defaultPrice || 0);
+    this.defaultDescription.reset(invoiceData.defaultDescription || 'Розробка програмного забезпечення');
+    this.defaultDescriptionEn.reset(invoiceData.defaultDescriptionEn || 'Software Development');
     this.formServices.reset();
     if (fromFile) (invoiceData.services || []).forEach(service => this.formServices.push(this.createService(service)));
     else this.addService();
@@ -224,13 +236,20 @@ export class AppModel {
       const day = (new Date(periodYear, periodMonth, i)).getDay();
       return q + (day && day < 6 && x || 0);
     }, 0);
-    return this.formBuilder.group({
-      description: [service?.description || 'Розробка програмного забезпечення', Validators.required],
-      descriptionEn: [service?.descriptionEn || 'Software Development', Validators.required],
-      appendPeriod: service?.appendPeriod || false,
+    const formGroup = this.formBuilder.group({
+      description: [service?.description || this.defaultDescription.value, Validators.required],
+      descriptionEn: [service?.descriptionEn || this.defaultDescriptionEn.value, Validators.required],
+      appendPeriod: service?.appendPeriod !== false,
       quantity: service?.amount ? [] : [service?.quantity || defaultQuantity],
       price: [service?.price || this.defaultPrice.value, Validators.required],
       amount: [service?.amount]
     });
+    formGroup.get('amount')?.valueChanges.pipe(debounceTime(0)).subscribe(x => {
+      if (x) formGroup.get('quantity')?.reset(null);
+    });
+    formGroup.get('quantity')?.valueChanges.pipe(debounceTime(0)).subscribe(x => {
+      if (x) formGroup.get('amount')?.reset(null);
+    });
+    return formGroup;
   }
 }
