@@ -1,4 +1,6 @@
 :host {
+  font-size: 1rem;
+
   @media print {
     display: none;
   }
@@ -26,4 +28,8 @@ input[type=file] {
   top: -100%;
   box-sizing: border-box;
   opacity: 0;
+}
+
+hr {
+  margin: 1em -12px;
 }

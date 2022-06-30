@@ -36,10 +36,11 @@ export class AppModel {
       subjectMatterEn: ['', Validators.required]
     }),
 
-    defaultPrice: 0,
+    defaultPrice: [0, Validators.min(0)],
     defaultDescription: ['', Validators.required],
     defaultDescriptionEn: ['', Validators.required],
     services: this.formBuilder.array([]),
+    tax: [0, [Validators.min(0), Validators.max(100)]],
 
     supplier: this.formBuilder.group({
       name: ['', Validators.required],
@@ -130,6 +131,11 @@ export class AppModel {
     private readonly datePipe: DatePipe,
     private readonly domSanitizer: DomSanitizer
   ) {
+    this.defaultPrice.valueChanges.pipe(debounceTime(500)).subscribe(x => this.formServices.controls.forEach(control => {
+      const price = control.get('price');
+      if (price && !price.value) price.reset(x);
+    }));
+
     fromEvent<ProgressEvent>(this.uploadInvoiceDataReader, 'load').pipe(
       map(x => {
         try {
@@ -202,6 +208,7 @@ export class AppModel {
     this.formServices.reset();
     if (fromFile) (invoiceData.services || []).forEach(service => this.formServices.push(this.createService(service)));
     else this.addService();
+    this.form.get('tax')?.reset(invoiceData.tax || 0);
   }
 
   uploadInvoiceData(input: HTMLInputElement): void {
@@ -241,8 +248,8 @@ export class AppModel {
       descriptionEn: [service?.descriptionEn || this.defaultDescriptionEn.value, Validators.required],
       appendPeriod: service?.appendPeriod !== false,
       quantity: service?.amount ? [] : [service?.quantity || defaultQuantity],
-      price: [service?.price || this.defaultPrice.value, Validators.required],
-      amount: [service?.amount]
+      price: [service?.price || this.defaultPrice.value, [Validators.required, Validators.min(0)]],
+      amount: service?.amount
     });
     formGroup.get('amount')?.valueChanges.pipe(debounceTime(0)).subscribe(x => {
       if (x) formGroup.get('quantity')?.reset(null);

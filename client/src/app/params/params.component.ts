@@ -8,6 +8,9 @@ import {AppModel} from 'src/app/app.model';
   styleUrls: ['./params.component.scss']
 })
 export class ParamsComponent {
+  supplierExpanded = this.model.formSupplier.invalid;
+  beneficiaryExpanded = this.model.formBeneficiary.invalid;
+
   constructor(
     @Inject(DOCUMENT) private readonly doc: Document,
     public readonly model: AppModel

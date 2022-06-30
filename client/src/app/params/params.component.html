@@ -1,16 +1,19 @@
 <div class="grid grid-2">
   <h2>Реквізити рахунку</h2>
   <div align="end">
-    <div style="display: inline-block; position: relative; overflow: hidden; vertical-align: middle;">
-      <button mat-icon-button color="primary" title="Завантажити резервну копію реквізитів" tabindex="-1">
+    <a #downloadLink [href]="model.invoiceData$ | async" download="invoice-data_{{model.currentDate | date:'YYYYMMdd'}}.json" style="display: none;"></a>
+    <div style="display: inline-block; position: relative; overflow: hidden; vertical-align: top;">
+      <button mat-icon-button color="primary" title="Завантажити рахунок з локального пристрою" tabindex="-1">
         <mat-icon>upload</mat-icon>
       </button>
-      <input #uploadInvoiceInput (change)="model.uploadInvoiceData(uploadInvoiceInput)" type="file" accept="application/json"
-             tabindex="-1" style="cursor: pointer;">
+      <input #uploadInvoiceInput (change)="model.uploadInvoiceData(uploadInvoiceInput)" type="file" accept="application/json" tabindex="-1"
+             style="cursor: pointer;">
     </div>
-    <a #downloadLink [href]="model.invoiceData$ | async" download="invoice-data_{{model.currentDate | date:'YYYYMMdd'}}.json" style="display: none;"></a>
-    <button (click)="downloadLink.click(); model.save();" mat-icon-button color="primary" title="Зберегти резервну копію реквізитів" tabindex="-1">
+    <button (click)="downloadLink.click()" mat-icon-button color="primary" title="Зберегти рахунок на локальному пристрою" tabindex="-1">
       <mat-icon>download</mat-icon>
+    </button>
+    <button (click)="model.save();" mat-icon-button color="primary" title="Зберегти реквізити" tabindex="-1">
+      <mat-icon>save</mat-icon>
     </button>
     <button (click)="model.reset()" mat-icon-button color="accent" title="Відмінити зміни" tabindex="-1">
       <mat-icon>replay</mat-icon>
@@ -82,24 +85,28 @@
 
   <fieldset class="mat-expansion-panel mat-expanded">
     <legend>Послуги</legend>
-    <div class="grid grid-4">
-      <div style="grid-column-start: 1; grid-column-end: 4;">
-        <div class="grid grid-2">
-          <mat-form-field>
-            <mat-label>Опис за замовчуванням</mat-label>
-            <input formControlName="defaultDescription" matInput>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Default description</mat-label>
-            <input formControlName="defaultDescriptionEn" matInput>
-          </mat-form-field>
-        </div>
-      </div>
+    <div class="grid grid-2">
       <mat-form-field>
-        <mat-label>Ціна за годину за замовчуванням</mat-label>
-        <input formControlName="defaultPrice" matInput>
+        <mat-label>Опис за замовчуванням</mat-label>
+        <input formControlName="defaultDescription" matInput>
       </mat-form-field>
+      <mat-form-field>
+        <mat-label>Default description</mat-label>
+        <input formControlName="defaultDescriptionEn" matInput>
+      </mat-form-field>
+      <div class="grid grid-2">
+        <mat-form-field>
+          <mat-label>Ціна за годину за замовчуванням</mat-label>
+          <input formControlName="defaultPrice" matInput>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Налог</mat-label>
+          <input formControlName="tax" matInput>
+          <span matSuffix>%</span>
+        </mat-form-field>
+      </div>
     </div>
+    <hr>
     <ng-container formArrayName="services">
       <ng-container *ngFor="let service of model.formServicesGroups; index as i" [formGroup]="service">
         <div class="grid grid-2">
@@ -138,14 +145,14 @@
             </button>
           </div>
         </div>
+        <hr>
       </ng-container>
     </ng-container>
-    <hr>
     <button mat-button (click)="model.addService()" color="primary" aria-label="Додати послугу">Додати послугу</button>
   </fieldset>
   <br>
   <mat-accordion multi>
-    <mat-expansion-panel formGroupName="supplier" expanded="{{model.formSupplier.invalid}}">
+    <mat-expansion-panel formGroupName="supplier" expanded="{{supplierExpanded}}">
       <mat-expansion-panel-header>
         <mat-panel-title>Виконавець</mat-panel-title>
       </mat-expansion-panel-header>
@@ -185,15 +192,15 @@
                  (focus)="signatureFileFormField._elementRef.nativeElement.classList.add('mat-focused');"
                  (blur)="signatureFileFormField._elementRef.nativeElement.classList.remove('mat-focused')"
                  type="file" accept="image/*" tabindex="-1">
-          <mat-hint>Зображення повинно бути з прозорим або білим фоном та розміром не більше 275х85px</mat-hint>
+          <mat-hint>Зображення з прозорим або білим фоном та розміром не більше 275х85px</mat-hint>
         </mat-form-field>
-        <div>
-          <img [src]="model.formSupplier.get('signatureImage')?.value" [alt]="model.formSupplier.get('signatureImageName')?.value" class="signature">
+        <div *ngIf="model.formSupplier.get('signatureImage')?.value as imgSrc">
+          <img [src]="imgSrc" [alt]="model.formSupplier.get('signatureImageName')?.value" class="signature">
         </div>
       </div>
     </mat-expansion-panel>
 
-    <mat-expansion-panel formGroupName="beneficiary" expanded="{{model.formBeneficiary.invalid}}">
+    <mat-expansion-panel formGroupName="beneficiary" expanded="{{beneficiaryExpanded}}">
       <mat-expansion-panel-header>
         <mat-panel-title>Реквізити банківського рахунку</mat-panel-title>
       </mat-expansion-panel-header>

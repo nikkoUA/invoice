@@ -25,6 +25,7 @@ export interface InvoiceData {
   readonly defaultDescription?: string;
   readonly defaultDescriptionEn?: string;
   readonly services?: ReadonlyArray<Service>;
+  readonly tax?: number;
 
   readonly supplier?: {
     readonly name: string;
