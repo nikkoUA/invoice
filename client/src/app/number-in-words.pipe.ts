@@ -223,7 +223,7 @@ export class NumberInWordsPipe implements PipeTransform {
             fractionalWords.push(textValue.numbers[2][currentFractionalDigit]);
           else if (fractionalIndex === 1) {
             if (locale === 'en') fractionalWords.push('-');
-            fractionalWords.push(textValue.numbers[0][currentFractionalDigit]);
+            fractionalWords.push(textValue.numbers[1][currentFractionalDigit]);
           }
 
           if (fractionalIndex === 1) {
