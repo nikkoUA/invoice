@@ -1,16 +1,16 @@
 {
-  "name": "invoice",
-  "version": "1.1.1",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve --open",
-    "build": "ng build && node ./deploy.js",
-    "watch": "ng build --watch --configuration development"
+  "name" : "invoice",
+  "version" : "1.1.2",
+  "scripts" : {
+    "ng" : "ng",
+    "start" : "ng serve --open",
+    "build" : "ng build && node ./deploy.js",
+    "watch" : "ng build --watch --configuration development"
   },
-  "private": true,
-  "dependencies": {
-    "@angular/animations": "^13.3.11",
-    "@angular/cdk": "^13.3.9",
+  "private" : true,
+  "dependencies" : {
+    "@angular/animations" : "^13.3.11",
+    "@angular/cdk" : "^13.3.9",
     "@angular/common": "^13.3.11",
     "@angular/compiler": "^13.3.11",
     "@angular/core": "^13.3.11",
